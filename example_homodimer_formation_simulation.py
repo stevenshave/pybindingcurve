@@ -14,7 +14,7 @@ print(
     f"Homodimer formation analytical \tpl={pbc.System_homodimer_formation_analytical_pp().query({'p':4, 'kdpp':1})}, \ttook {round(time.time()-start,5)} seconds")
 
 # Simulate a binding curve
-system_parameters = {'p': np.linspace(0,10), 'kdpp': 10}
+system_parameters = {'p': np.linspace(0,10000), 'kdpp':10, 'ymax':1}
 mySystem = pbc.BindingCurve("homodimer formation")
 mySystem.add_curve(system_parameters, 'pp')
 mySystem.show_plot()
