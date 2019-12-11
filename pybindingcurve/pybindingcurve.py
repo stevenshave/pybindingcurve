@@ -87,10 +87,10 @@ class BindingCurve():
             if binding_system=="simple" or binding_system=="1:1":
                 self.system=System_one_to_one_analytical_pl()
             # 1:1 kinetic - only used for testing purposes
-            if binding_system=="simplekinetic" or binding_system=="simple kinetic" or binding_system=="1:1 kinetic" or binding_system=="1:1kinetic":
+            if binding_system=="simplekinetic"
                 self.system=System_one_to_one()
             # Homodimer formation
-            if binding_system=="homodimer" or binding_system=="homodimer formation":
+            if binding_system=="homodimerformation"
                 self.system=System_homodimer_formation_analytical_pp()
             # Homodimer formation kinetic - only used for testing purposes
             if binding_system=="homodimerkinetic" or binding_system=="homodimer kinetic" or binding_system=="homodimerformationkinetic" or binding_system=="homodimer formation kinetic":
