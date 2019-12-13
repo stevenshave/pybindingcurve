@@ -19,7 +19,7 @@ system_parameters = {'p': xcoords, 'l': 10, 'i': 10, 'kdpl': 10}
 # Now we call fit, passing the known parameters, followed by a dict of parameters to be fitted along
 # with an initial guess, pass the ycoords, and what the readout (ycoords) is
 fitted_system, fit_accuracy = mySystem.fit(
-    system_parameters, {'kdpi': 0}, ycoords, 'pl')
+    system_parameters, {'kdpi': 0}, ycoords)
 
 # Print out the fitted parameters
 for k, v in fit_accuracy.items():
@@ -29,7 +29,7 @@ for k, v in fit_accuracy.items():
 fitted_system['p'] = np.linspace(0, np.max(xcoords))
 
 # Add a new curve, simulated using fitted parameters to our BindingCurve object
-mySystem.add_curve(fitted_system, 'pl')
+mySystem.add_curve(fitted_system)
 
 # Show the plot
 mySystem.show_plot()

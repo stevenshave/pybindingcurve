@@ -10,6 +10,8 @@ def system01_one_to_one__p_l_kd__pl(p, l, kdpl):
     kdpl = mpf(kdpl)
     return ((p+kdpl+l-sqrt(-4*p*l+power(p+kdpl+l, 2)))/2.).real
 
+# competition
+
 
 def system02_competition__p_l_i_kdpl_kdpi__pl(p, l, i, kdpl, kdpi):
     p = mpf(p)
@@ -30,6 +32,8 @@ def system03_homodimer_formation__p_kdpp__pp(p, kdpp):
     p = mpf(p)
     kdpp = mpf(kdpp)
     return ((4*p+kdpp-sqrt(kdpp)*sqrt(8*p+kdpp))/8.).real
+
+# Dimer breaking
 
 
 def system04_homodimer_breaking__p_l_kdpp_kdpl(p, l, kdpp, kdpl):

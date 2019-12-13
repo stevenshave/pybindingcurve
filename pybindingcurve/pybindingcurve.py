@@ -54,22 +54,10 @@ class BindingCurve():
     _max_y_axis = 0.0
     _num_added_traces = 0
     _last_known_changing_parameter="X"
-    _last_known_readout="Y"
     
     def query(self, parameters, readout):
-        if not self.system.analytical:
-            return self.system.query(parameters, readout)
-        else:
-            print("Must supply a readout")
-            return None
-
-    def query(self, parameters):
-        if self.system.analytical:
-            return self.system.query(parameters)
-        else:
-            print("Must supply a readout")
-
-
+        return self.system.query(parameters, readout)
+        
     def _find_changing_parameters(self, params: dict):
         changing_list = []
         for p in params.keys():
@@ -84,30 +72,30 @@ class BindingCurve():
         if type(binding_system) is str:
             binding_system=binding_system.lower()
             # 1:1
-            if binding_system=="simple" or binding_system=="1:1":
-                self.system=System_one_to_one_analytical_pl()
-            # 1:1 kinetic - only used for testing purposes
-            if binding_system=="simplekinetic"
-                self.system=System_one_to_one()
+            if binding_system in ["simple", "1:1"]:
+                self.system=System_analytical_one_to_one_pl()
+            # 1:1 kinetic
+            if binding_system in ["simplekinetic", "1:1kinetic"]:
+                self.system=System_kinetic_one_to_one_pl()
             # Homodimer formation
-            if binding_system=="homodimerformation"
-                self.system=System_homodimer_formation_analytical_pp()
+            if binding_system in ["homodimerformation"]:
+                self.system=System_analytical_homodimerformation_pp()
             # Homodimer formation kinetic - only used for testing purposes
-            if binding_system=="homodimerkinetic" or binding_system=="homodimer kinetic" or binding_system=="homodimerformationkinetic" or binding_system=="homodimer formation kinetic":
-                self.system=System_homodimer_formation()
+            if binding_system in ["homodimerkinetic"]:
+                self.system=System_kinetic_homodimerformation()
 
             # Competition
-            if binding_system=="competition" or binding_system=="1:1:1":
-                self.system=System_competition()
+            if binding_system in ["competition", "1:1:1"]:
+                self.system=System_analytical_competition_pl()
             # Competition
-            if binding_system=="homodimerbreaking" or binding_system=="homodimer breaking":
-                self.system=System_homodimer_breaking()
+            if binding_system in ["homodimerbreaking", "homodimer breaking"]:
+                self.system=System_kinetic_homodimerbreaking_pp()
         else:
             if issubclass(binding_system, BindingSystem):
                 self.system = binding_system()
-        if self.system is None:
-            print("Invalid system specified, try one of: [simple, homodimer, competition, homdimer breaking]")
-            return None
+            else:
+                print("Invalid system specified, try one of: [simple, homodimer, competition, homdimer breaking]")
+                return None
     def _initialize_plot(self):
         if self.fig is None:
             self.fig, self.axes = plt.subplots(
@@ -117,7 +105,7 @@ class BindingCurve():
             plt.tight_layout(rect=(0.05,0.05,0.95,0.92))
    
 
-    def add_curve(self, parameters, readout, curve_name=None):
+    def add_curve(self, parameters, curve_name=None):
         if self.system is None:
             print("No system defined, could not proceed")
             return None
@@ -126,14 +114,9 @@ class BindingCurve():
         if not len(changing_parameters) == 1:
             print("Must have 1 changing parameter, no curves added.")
             return
-        y_values = None
-        if not self.system.analytical:
-            y_values=self.system.query(parameters, readout)
-        else:
-            y_values=self.system.query(parameters)
+        y_values = self.system.query(parameters)
         self.curves.append(_Curve(parameters[changing_parameters[0]],y_values))
         self._last_known_changing_parameter=changing_parameters[0]
-        self._last_known_readout = readout
         self._num_added_traces += 1
         if curve_name is None:
             curve_name = f"Curve {self._num_added_traces}"
@@ -215,7 +198,7 @@ class BindingCurve():
             self.axes.set_xlabel(xlabel, fontsize=pbc_plot_style['axis_label_size'],fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['x_axis_labelpad'])
         
         if ylabel is None:
-            self.axes.set_ylabel("["+self._last_known_readout.upper()+"]", fontsize=pbc_plot_style['axis_label_size'],fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['y_axis_labelpad'])
+            self.axes.set_ylabel("["+self.system.default_readout.upper()+"]", fontsize=pbc_plot_style['axis_label_size'],fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['y_axis_labelpad'])
         else:
             self.axes.set_ylabel(ylabel, fontsize=pbc_plot_style['axis_label_size'],fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['y_axis_labelpad'])
         
@@ -240,7 +223,7 @@ class BindingCurve():
                         'Title': "pyBindingCurve plot"})
         plt.show()
 
-    def fit(self, system_parameters: dict, to_fit: dict, ycoords: np.array, x_parameter='P', y_parameter='PL', bounds: dict=None,):
+    def fit(self, system_parameters: dict, to_fit: dict, ycoords: np.array, bounds: dict=None):
         """Fit the parameters of a system to a set of data points
 
         Fit the system to a set of (usually) experimental datapoints.
@@ -268,7 +251,6 @@ class BindingCurve():
             tuple(dict, dict)
                 Tuple containing a dictionary of best fit systems parameters, then a dictionary containing the accuracy for fitted variables.
         """
-        y_parameter=y_parameter.lower()
         system_parameters_copy=dict(system_parameters)
         # Check we have parameters to fit, and nothing is missing
         if(len(to_fit.keys()) == 0):
@@ -294,7 +276,7 @@ class BindingCurve():
                 varname, value=to_fit[varname], min=bnd_min, max=bnd_max)
 
         lmmini=lmfit.Minimizer(self._residual, params, fcn_args=(
-            system_parameters_copy, to_fit, ycoords, y_parameter))
+            system_parameters_copy, to_fit, ycoords))
         result=lmmini.minimize()
 
         for k in system_parameters_copy.keys():
@@ -303,7 +285,7 @@ class BindingCurve():
 
         return system_parameters_copy, dict((p, result.params[p].stderr) for p in result.params)
 
-    def _residual(self, params, system_parameters: dict, to_fit: dict, y: np.array, readout):
+    def _residual(self, params, system_parameters: dict, to_fit: dict, y: np.array):
         """Residual function for fitting parameters.
 
         Helper function for lm_fit, calculating residual remaining for probed system parameters.
@@ -316,8 +298,5 @@ class BindingCurve():
 
         """
         for value in params:
-            system_parameters[value]=params[value]
-        if not self.system.analytical:
-            return self.system.query(system_parameters,readout)-y
-        else:
-            return self.system.query(system_parameters)-y
+            system_parameters[value]=float(params[value])
+        return self.system.query(system_parameters)-y
