@@ -1,6 +1,6 @@
 import matplotlib as mpl
 import numpy as np
-import pybindingcurve2 as pbc2
+import pybindingcurve as pbc
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
@@ -20,14 +20,14 @@ x_axis_breaking=np.linspace(0, max_x_breaking, num=num_points)
 homo_y_formation=np.empty((num_points))
 hetero_y_formation=np.empty((num_points))
 for i in range(len(homo_y_formation)):
-    homo_y_formation[i]=pbc2.system03_p_kdpp__pp({'kdpp':dimer_kd, 'p':x_axis_formation[i]*2})
-    hetero_y_formation[i]=pbc2.system01_p_l_kd__pl({'kdpl':dimer_kd,'p':x_axis_formation[i], 'l':x_axis_formation[i]})
+    homo_y_formation[i]=pbc.System_analytical_homodimerformation_pp().query({'kdpp':dimer_kd, 'p':x_axis_formation[i]*2})
+    hetero_y_formation[i]=pbc.System_analytical_one_to_one_pl().query({'kdpl':dimer_kd,'p':x_axis_formation[i], 'l':x_axis_formation[i]})
 
 homo_y_breaking=np.empty((num_points))
 hetero_y_breaking=np.empty((num_points))
 for i in range(len(homo_y_formation)):
-    homo_y_breaking[i]=pbc2.system04_p_i_kdpp_kdpi__pp({'kdpi':inhibitor_kd, 'kdpp':dimer_kd, 'p':2, 'i':x_axis_breaking[i]})
-    hetero_y_breaking[i]=pbc2.system02_p_l_i_kdpl_kdpi__pl({'kdpi': inhibitor_kd, 'kdpl':dimer_kd, 'p':1,'l':1, 'i':x_axis_breaking[i]})
+    homo_y_breaking[i]=pbc.System_kinetic_homodimerbreaking_pp().query({'kdpi':inhibitor_kd, 'kdpp':dimer_kd, 'p':2, 'i':x_axis_breaking[i]})
+    hetero_y_breaking[i]=pbc.System_analytical_competition_pl().query({'kdpi': inhibitor_kd, 'kdpl':dimer_kd, 'p':1,'l':1, 'i':x_axis_breaking[i]})
 
 fig, ax=plt.subplots(nrows=1,ncols=2, figsize=(10,5.5), sharey=True)
 #plt.tight_layout()

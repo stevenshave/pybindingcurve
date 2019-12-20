@@ -78,10 +78,10 @@ class BindingCurve():
             if binding_system in ["simplekinetic", "1:1kinetic"]:
                 self.system=System_kinetic_one_to_one_pl()
             # Homodimer formation
-            if binding_system in ["homodimerformation"]:
+            if binding_system in ["homodimerformation", "homodimer formation"]:
                 self.system=System_analytical_homodimerformation_pp()
             # Homodimer formation kinetic - only used for testing purposes
-            if binding_system in ["homodimerkinetic"]:
+            if binding_system in ["homodimerformationkinetic", "homodimer formation kinetic"]:
                 self.system=System_kinetic_homodimerformation()
 
             # Competition
@@ -93,9 +93,9 @@ class BindingCurve():
         else:
             if issubclass(binding_system, BindingSystem):
                 self.system = binding_system()
-            else:
-                print("Invalid system specified, try one of: [simple, homodimer, competition, homdimer breaking]")
-                return None
+        if self.system is None:
+            print("Invalid system specified, try one of: [simple, homodimer, competition, homdimer breaking], or pass a system object")
+            return None
     def _initialize_plot(self):
         if self.fig is None:
             self.fig, self.axes = plt.subplots(
@@ -172,6 +172,7 @@ class BindingCurve():
 
             None
         """
+
         if not min_x is None:
             self._min_x_axis=min_x
         if not max_x is None:

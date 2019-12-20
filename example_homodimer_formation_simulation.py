@@ -16,5 +16,5 @@ print(
 # Simulate a binding curve
 system_parameters = {'p': np.linspace(0,10000), 'kdpp':10}
 mySystem = pbc.BindingCurve("homodimer formation")
-mySystem.add_curve(system_pasrameters)
+mySystem.add_curve(system_parameters)
 mySystem.show_plot()

@@ -3,8 +3,6 @@ from inspect import signature
 import numpy as np
 
 
-
-
 class BindingSystem():
     system = None
     analytical = False
