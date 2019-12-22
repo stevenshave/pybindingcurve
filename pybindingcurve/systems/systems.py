@@ -1,6 +1,7 @@
 from pybindingcurve.systems import analyticalsystems, kineticsystems
 from inspect import signature
 import numpy as np
+import mpmath
 
 # TODO: Add analytical systems and curve tracing for homodimer breaking and binding to multiple sites.
 # TODO: Add kinetic 1:n systems
@@ -79,7 +80,12 @@ class BindingSystem():
         else: 
             # At least 1 changing parameter
             if len(changing_parameters) == 1:
-                results = np.empty(len(parameters[changing_parameters[0]]))
+                results=None
+                num_solutions=getattr(self, 'num_solutions', 1)
+                if num_solutions == 1:
+                    results = np.empty(len(parameters[changing_parameters[0]]))
+                else:
+                    results = np.empty((len(parameters[changing_parameters[0]]),num_solutions))
                 # 1 changing parameter
                 if self.analytical:  # Using an analytical solution
                     for i in range(results.shape[0]):
@@ -95,7 +101,11 @@ class BindingSystem():
                 print("Only 1 parameter may change, currently changing: ",
                       changing_parameters)
                 return None
-        return np.nan_to_num(results)
+        if isinstance(results,(np.ndarray)):
+            if results.ndim>1:
+                results=results.T
+            return np.nan_to_num(results)
+        return results # We get here if its not a numpy array, but a system with multiple solutions queried at for a single point
 
     def _are_ymin_ymax_present(self, parameters: dict):
         if 'ymin' in parameters.keys():
@@ -154,6 +164,20 @@ class System_analytical_homodimerformation_pp(BindingSystem):
         else:
             return super().query(parameters)
 
+
+class System_analytical_homodimerbreaking_pp(BindingSystem):
+    def __init__(self):
+        super().__init__(analyticalsystems.system04_homodimer_breaking__p_l_kdpp_kdpl__pp, analytical=True)
+        self.default_readout = "pp"
+        self.num_solutions=2
+    def query(self, parameters: dict):
+        if self._are_ymin_ymax_present(parameters):
+            parameters_no_min_max=self._remove_ymin_ymax_keys_from_dict_return_new(parameters)
+            value=super().query(parameters_no_min_max)
+            with np.errstate(divide='ignore', invalid='ignore'):
+                return np.nan_to_num(parameters['ymin']+((parameters['ymax']-parameters['ymin'])*value)/(parameters['p']/2.0))
+        else:
+            return super().query(parameters)
 
 class System_kinetic_one_to_one_pl(BindingSystem):
     def __init__(self):
@@ -264,7 +288,7 @@ class System_kinetic_homodimerformation_p(BindingSystem):
 
 class System_kinetic_homodimerbreaking_pp(BindingSystem):
     def __init__(self):
-        super().__init__(kineticsystems.system04_p_i_kdpp_kdpi__pp, False)
+        super().__init__(kineticsystems.system04_p_l_kdpp_kdpl__pp, False)
         self.default_readout='pp'
     def query(self, parameters: dict):
         if self._are_ymin_ymax_present(parameters):
@@ -278,7 +302,7 @@ class System_kinetic_homodimerbreaking_pp(BindingSystem):
 
 class System_kinetic_homodimerbreaking_p(BindingSystem):
     def __init__(self):
-        super().__init__(kineticsystems.system04_p_i_kdpp_kdpi__pp, False)
+        super().__init__(kineticsystems.system04_p_l_kdpp_kdpl__pp, False)
         self.default_readout='p'
     def query(self, parameters: dict):
         if self._are_ymin_ymax_present(parameters):
@@ -292,7 +316,7 @@ class System_kinetic_homodimerbreaking_p(BindingSystem):
 
 class System_kinetic_homodimerbreaking_l(BindingSystem):
     def __init__(self):
-        super().__init__(kineticsystems.system04_p_i_kdpp_kdpi__pp, False)
+        super().__init__(kineticsystems.system04_p_l_kdpp_kdpl__pp, False)
         self.default_readout='l'
     def query(self, parameters: dict):
         if self._are_ymin_ymax_present(parameters):
@@ -305,7 +329,7 @@ class System_kinetic_homodimerbreaking_l(BindingSystem):
 
 class System_kinetic_homodimerbreaking_pl(BindingSystem):
     def __init__(self):
-        super().__init__(kineticsystems.system04_p_i_kdpp_kdpi__pp, False)
+        super().__init__(kineticsystems.system04_p_l_kdpp_kdp__pp, False)
         self.default_readout='pl'
     def query(self, parameters: dict):
         if self._are_ymin_ymax_present(parameters):

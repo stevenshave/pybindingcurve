@@ -55,8 +55,8 @@ class BindingCurve():
     _num_added_traces = 0
     _last_known_changing_parameter="X"
     
-    def query(self, parameters, readout):
-        return self.system.query(parameters, readout)
+    def query(self, parameters):
+        return self.system.query(parameters)
         
     def _find_changing_parameters(self, params: dict):
         changing_list = []
@@ -115,19 +115,31 @@ class BindingCurve():
             print("Must have 1 changing parameter, no curves added.")
             return
         y_values = self.system.query(parameters)
-        self.curves.append(_Curve(parameters[changing_parameters[0]],y_values))
+        if y_values.ndim>1:
+            for i in range(y_values.ndim):
+                self.curves.append(_Curve(parameters[changing_parameters[0]],y_values[i]))
+        else:
+            self.curves.append(_Curve(parameters[changing_parameters[0]],y_values))
         self._last_known_changing_parameter=changing_parameters[0]
-        self._num_added_traces += 1
-        if curve_name is None:
-            curve_name = f"Curve {self._num_added_traces}"
-        self.axes.plot(parameters[changing_parameters[0]], y_values,
-                       self.plot_solution_colours[self._num_added_traces]+'-', label=curve_name, linewidth=2)
-        self._max_x_axis = np.nanmax(
-            [self._max_x_axis, parameters[changing_parameters[0]][-1]])
-        self._min_x_axis = np.nanmin(
-            [self._min_x_axis, parameters[changing_parameters[0]][0]])
-        self._min_y_axis = np.nanmin(y_values)
-        self._max_y_axis = np.nanmax([self._max_y_axis, np.nanmax(y_values)])
+        print(len(self.curves))
+        for curve_it, curve in enumerate(self.curves[self._num_added_traces:]):
+            self._num_added_traces += 1
+            curve_name_with_number=None
+            if curve_name is None:
+                curve_name_with_number = f"Curve {self._num_added_traces}"
+            else:
+                if y_values.ndim==1:
+                    curve_name_with_number=curve_name
+                else:
+                    curve_name_with_number=curve_name+" "+str(curve_it+1)
+            self.axes.plot(parameters[changing_parameters[0]], curve.ycoords,
+                        self.plot_solution_colours[self._num_added_traces]+'-', label=curve_name_with_number, linewidth=2)
+            self._max_x_axis = np.nanmax(
+                [self._max_x_axis, parameters[changing_parameters[0]][-1]])
+            self._min_x_axis = np.nanmin(
+                [self._min_x_axis, parameters[changing_parameters[0]][0]])
+            self._min_y_axis = np.nanmin([self._min_y_axis, np.nanmin(curve.ycoords)])
+            self._max_y_axis = np.nanmax([self._max_y_axis, np.nanmax(curve.ycoords)])
 
     def add_points_to_plot(self, xcoords, ycoords):
         """

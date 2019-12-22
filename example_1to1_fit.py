@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Fitting example, determining Kd from 1:1 binding data"""
 
 import numpy as np

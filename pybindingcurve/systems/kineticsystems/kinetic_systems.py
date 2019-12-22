@@ -42,17 +42,17 @@ def system03_p_kdpp__pp(p,kdpp, interval=(0, 100)):
     return {'p':ode_result[0],'pp':ode_result[1]}
 
 
-# Homodimer breaking
-def system04_p_i_kdpp_kdpi__pp(p,i,kdpp,kdpi,interval=(0, 100)):
-    def ode(concs, t, kdpp, kdpi):
-        p, i, pp, pi  = concs
+# Homodlmer breaklng
+def system04_p_l_kdpp_kdpl__pp(p,l,kdpp,kdpl,interval=(0, 100)):
+    def ode(concs, t, kdpp, kdpl):
+        p, l, pp, pl  = concs
         r_pp = -(p*p) + kdpp*pp
-        r_pi = -p*i + kdpi*pi
-        dpdt = 2*r_pp + r_pi
-        didt = r_pi
+        r_pl = -p*l + kdpl*pl
+        dpdt = 2*r_pp + r_pl
+        dldt = r_pl
         dppdt = -r_pp
-        dpidt = -r_pi
-        return [dpdt, didt, dppdt, dpidt]
-    ode_result = solve_ivp(lambda t,y:ode(y,t,kdpp, kdpi), interval, [p, i, 0.0, 0.0], rtol=1e-12, atol=1e-12).y[:,-1]
-    return {'p':ode_result[0],'i':ode_result[1],'pp':ode_result[2],'pi':ode_result[3]}
+        dpldt = -r_pl
+        return [dpdt, dldt, dppdt, dpldt]
+    ode_result = solve_ivp(lambda t,y:ode(y,t,kdpp, kdpl), interval, [p, l, 0.0, 0.0], rtol=1e-12, atol=1e-12).y[:,-1]
+    return {'p':ode_result[0],'l':ode_result[1],'pp':ode_result[2],'pl':ode_result[3]}
 
