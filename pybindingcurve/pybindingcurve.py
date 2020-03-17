@@ -47,7 +47,7 @@ class BindingCurve():
     fig = None
     axes = None
     plot_solution_colours = list(
-        "krgbycmrgbycmrgby")+list(np.linspace(0.1, 0.9, 0.05))
+        "krgbycmrgbycmrgby")+list(np.linspace(0.1, 0.9, num=20))
     _min_x_axis = 0.0
     _max_x_axis = 0.0
     _min_y_axis = 0.0
