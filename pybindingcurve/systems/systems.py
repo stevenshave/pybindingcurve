@@ -12,9 +12,6 @@ class BindingSystem():
     arguments = []
     default_readout = None
 
-    def scale_ymin_ymax(self, ymin, ymax, divisor, params_no_ymin_ymax):
-        return ymin + ((ymax - ymin) * self.system(**params_no_ymin_ymax)) / divisor
-
     def _find_changing_parameters(self, params: dict):
         changing_list = []
         for p in params.keys():
@@ -29,7 +26,7 @@ class BindingSystem():
         else:
             return changing_list
 
-    def __init__(self, bindingsystem, analytical=False):
+    def __init__(self, bindingsystem:callable, analytical:bool=False):
         self._system = bindingsystem
         self.analytical = analytical
         self.arguments = list(signature(bindingsystem).parameters.keys())
@@ -39,14 +36,14 @@ class BindingSystem():
             self.arguments.remove("interval")
 
 
-    def _remove_ymin_ymax_keys_from_dict_in_place(self, d):
+    def _remove_ymin_ymax_keys_from_dict_in_place(self, d:dict):
         if 'ymin' in d.keys():
             del d['ymin']
         if 'ymax' in d.keys():
             del d['ymax']
         return d
     
-    def _remove_ymin_ymax_keys_from_dict_return_new(self, input):
+    def _remove_ymin_ymax_keys_from_dict_return_new(self, input:dict):
         d=dict(input)
         if 'ymin' in d.keys():
             del d['ymin']
@@ -56,7 +53,7 @@ class BindingSystem():
 
 
 
-    def query(self, parameters):
+    def query(self, parameters:dict):
         results = None
         
         # Check that all required parameters are present and abort if not.

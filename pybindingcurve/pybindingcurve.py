@@ -1,15 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from pybindingcurve import *
 import lmfit
-
+from enum import Enum, auto
+from pybindingcurve.systems import *
 pbc_plot_style = {
     'axis_label_size': 12,
     'axis_label_font': "DejaVu Sans",
     'title_size': 12,
     'title_font': "DejaVu Sans",
-    #'figure_width': 9,
-    #'figure_height': 9,
+    # 'figure_width': 9,
+    # 'figure_height': 9,
     'x_tick_label_font_size': 10,
     'y_tick_label_font_size': 10,
     'legend_font_size': 9,
@@ -17,10 +17,15 @@ pbc_plot_style = {
     'x_axis_labelpad': None,
     'y_axis_labelpad': None,
     'title_labelpad': None,
-    'fig_size':(5*1.2,4*1.2)
+    'fig_size': (5*1.2, 4*1.2)
 }
 
 
+class Readout(Enum):
+    CONC = auto()
+    FRACTION_L = auto()
+    FRACTION_POSSIBLE_DIMER = auto()
+    SIGNAL = auto()
 
 
 class _Curve:
@@ -42,7 +47,8 @@ class _Curve:
 
 
 class BindingCurve():
-    system=None
+    system = None
+    _last_custom_readout=None
     curves = []
     fig = None
     axes = None
@@ -53,11 +59,11 @@ class BindingCurve():
     _min_y_axis = 0.0
     _max_y_axis = 0.0
     _num_added_traces = 0
-    _last_known_changing_parameter="X"
-    
+    _last_known_changing_parameter = "X"
+
     def query(self, parameters):
         return self.system.query(parameters)
-        
+
     def _find_changing_parameters(self, params: dict):
         changing_list = []
         for p in params.keys():
@@ -68,44 +74,49 @@ class BindingCurve():
         else:
             return changing_list
 
-    def __init__(self, binding_system):
+    def __init__(self, binding_system:[str, BindingSystem]):
         if type(binding_system) is str:
-            binding_system=binding_system.lower()
+            binding_system = binding_system.lower()
             # 1:1
             if binding_system in ["simple", "1:1"]:
-                self.system=System_analytical_one_to_one_pl()
+                self.system = System_analytical_one_to_one_pl()
             # 1:1 kinetic
             if binding_system in ["simplekinetic", "1:1kinetic"]:
-                self.system=System_kinetic_one_to_one_pl()
+                self.system = System_kinetic_one_to_one_pl()
             # Homodimer formation
             if binding_system in ["homodimerformation", "homodimer formation"]:
-                self.system=System_analytical_homodimerformation_pp()
+                self.system = System_analytical_homodimerformation_pp()
             # Homodimer formation kinetic - only used for testing purposes
             if binding_system in ["homodimerformationkinetic", "homodimer formation kinetic"]:
-                self.system=System_kinetic_homodimerformation()
+                self.system = System_kinetic_homodimerformation()
 
             # Competition
             if binding_system in ["competition", "1:1:1"]:
-                self.system=System_analytical_competition_pl()
+                self.system = System_analytical_competition_pl()
             # Competition
             if binding_system in ["homodimerbreaking", "homodimer breaking"]:
-                self.system=System_kinetic_homodimerbreaking_pp()
+                self.system = System_kinetic_homodimerbreaking_pp()
         else:
             if issubclass(binding_system, BindingSystem):
                 self.system = binding_system()
-        if self.system is None:
-            print("Invalid system specified, try one of: [simple, homodimer, competition, homdimer breaking], or pass a system object")
-            return None
+            else:
+                print(
+                    "Invalid system specified, try one of: [simple, homodimer, competition, homdimer breaking], or pass a system object")
+                return None
+
     def _initialize_plot(self):
         if self.fig is None:
             self.fig, self.axes = plt.subplots(
                 nrows=1, ncols=1, figsize=pbc_plot_style['fig_size'])
             self.axes.grid(True, which='both')
             self.axes.set_ylim(0, 1)
-            plt.tight_layout(rect=(0.05,0.05,0.95,0.92))
-   
+            plt.tight_layout(rect=(0.05, 0.05, 0.95, 0.92))
 
-    def add_curve(self, parameters, curve_name=None):
+    def add_curve(self, parameters: dict, name: str = None, readout: Readout = Readout.CONC):
+        """ 
+
+        Add a curve to the plot
+        """
         if self.system is None:
             print("No system defined, could not proceed")
             return None
@@ -114,34 +125,47 @@ class BindingCurve():
         if not len(changing_parameters) == 1:
             print("Must have 1 changing parameter, no curves added.")
             return
-        y_values = self.system.query(parameters)
-        if y_values.ndim>1:
+
+        y_values = self.system.query(parameters)    
+        
+        if readout==Readout.FRACTION_L:
+            y_values/=parameters['l']
+            self._last_custom_readout="Fraction L bound"
+
+        if readout==Readout.FRACTION_POSSIBLE_DIMER:
+            y_values/=(parameters['p']/2.0)
+            self._last_custom_readout="Fraction possible dimer"
+
+        if y_values.ndim > 1:
             for i in range(y_values.ndim):
-                self.curves.append(_Curve(parameters[changing_parameters[0]],y_values[i]))
+                self.curves.append(
+                    _Curve(parameters[changing_parameters[0]], y_values[i]))
         else:
-            self.curves.append(_Curve(parameters[changing_parameters[0]],y_values))
-        self._last_known_changing_parameter=changing_parameters[0]
-        print(len(self.curves))
+            self.curves.append(
+                _Curve(parameters[changing_parameters[0]], y_values))
+        self._last_known_changing_parameter = changing_parameters[0]
         for curve_it, curve in enumerate(self.curves[self._num_added_traces:]):
             self._num_added_traces += 1
-            curve_name_with_number=None
-            if curve_name is None:
+            curve_name_with_number = None
+            if name is None:
                 curve_name_with_number = f"Curve {self._num_added_traces}"
             else:
-                if y_values.ndim==1:
-                    curve_name_with_number=curve_name
+                if y_values.ndim == 1:
+                    curve_name_with_number = name
                 else:
-                    curve_name_with_number=curve_name+" "+str(curve_it+1)
+                    curve_name_with_number = name+" "+str(curve_it+1)
             self.axes.plot(parameters[changing_parameters[0]], curve.ycoords,
-                        self.plot_solution_colours[self._num_added_traces]+'-', label=curve_name_with_number, linewidth=2)
+                           self.plot_solution_colours[self._num_added_traces]+'-', label=curve_name_with_number, linewidth=2)
             self._max_x_axis = np.nanmax(
                 [self._max_x_axis, parameters[changing_parameters[0]][-1]])
             self._min_x_axis = np.nanmin(
                 [self._min_x_axis, parameters[changing_parameters[0]][0]])
-            self._min_y_axis = np.nanmin([self._min_y_axis, np.nanmin(curve.ycoords)])
-            self._max_y_axis = np.nanmax([self._max_y_axis, np.nanmax(curve.ycoords)])
+            self._min_y_axis = np.nanmin(
+                [self._min_y_axis, np.nanmin(curve.ycoords)])
+            self._max_y_axis = np.nanmax(
+                [self._max_y_axis, np.nanmax(curve.ycoords)])
 
-    def add_points_to_plot(self, xcoords, ycoords):
+    def add_scatter(self, xcoords, ycoords):
         """
         Add scatterpoints to a plot, useful to represent real measurement data
 
@@ -160,15 +184,14 @@ class BindingCurve():
             self._min_y_axis = min(self._min_y_axis, min(np.real(ycoords)))
             self._max_y_axis = max(self._max_y_axis, max(np.real(ycoords)))
 
-
-    def show_plot(self, title: str="System simulation",xlabel: str=None,ylabel: str=None,min_x: float=None,max_x: float=None,min_y: float=None,max_y: float=None,log_x_axis: bool=False,log_y_axis: bool=False,pbc_plot_style: dict=pbc_plot_style,png_filename: str=None,svg_filename: str=None,show_legend: bool=True):
+    def show_plot(self, title: str = "System simulation", xlabel: str = None, ylabel: str = None, min_x: float = None, max_x: float = None, min_y: float = None, max_y: float = None, log_x_axis: bool = False, log_y_axis: bool = False, pbc_plot_style: dict = pbc_plot_style, png_filename: str = None, svg_filename: str = None, show_legend: bool = True):
         """Show the PyBindingCurve plot
 
         Args:
 
             title (str):  The title of the plot (default = "System simulation")
             xlabel (str):  X-axis label (default = None)
-            ylabel (str):  Y-axis label (default = None, causing label to be "Fraction")
+            ylabel (str):  Y-axis label (default = None, causing label to be "[Complex]")
             min_x (float): X-axis minimum (default = None)
             max_x (float): X-axis maximum (default = None)
             min_y (float): Y-axis minimum (default = None)
@@ -186,13 +209,13 @@ class BindingCurve():
         """
 
         if not min_x is None:
-            self._min_x_axis=min_x
+            self._min_x_axis = min_x
         if not max_x is None:
-            self._max_x_axis=max_x
+            self._max_x_axis = max_x
         if not min_y is None:
-            self._min_y_axis=min_y
+            self._min_y_axis = min_y
         if not max_y is None:
-            self._max_y_axis=max_y
+            self._max_y_axis = max_y
 
         if max_y is None:
             self.axes.set_ylim(self._min_y_axis, self._max_y_axis*1.1)
@@ -204,21 +227,27 @@ class BindingCurve():
         if log_y_axis:
             self.axes.set_yscale("log", nonposx='clip')
 
-
         if xlabel is None:
-            self.axes.set_xlabel("["+self._last_known_changing_parameter.upper()+"]", fontsize=pbc_plot_style['axis_label_size'],fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['x_axis_labelpad'])
+            self.axes.set_xlabel("["+self._last_known_changing_parameter.upper()+"]", fontsize=pbc_plot_style['axis_label_size'],
+                                 fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['x_axis_labelpad'])
         else:
-            self.axes.set_xlabel(xlabel, fontsize=pbc_plot_style['axis_label_size'],fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['x_axis_labelpad'])
-        
+            self.axes.set_xlabel(xlabel, fontsize=pbc_plot_style['axis_label_size'],
+                                 fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['x_axis_labelpad'])
+
         if ylabel is None:
-            self.axes.set_ylabel("["+self.system.default_readout.upper()+"]", fontsize=pbc_plot_style['axis_label_size'],fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['y_axis_labelpad'])
+            if self._last_custom_readout is None:
+                self.axes.set_ylabel("["+self.system.default_readout.upper()+"]", fontsize=pbc_plot_style['axis_label_size'],
+                                    fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['y_axis_labelpad'])
+            else:
+                self.axes.set_ylabel(self._last_custom_readout, fontsize=pbc_plot_style['axis_label_size'],fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['y_axis_labelpad'])
         else:
-            self.axes.set_ylabel(ylabel, fontsize=pbc_plot_style['axis_label_size'],fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['y_axis_labelpad'])
-        
+            self.axes.set_ylabel(ylabel, fontsize=pbc_plot_style['axis_label_size'],
+                                 fontname=pbc_plot_style['axis_label_font'], labelpad=pbc_plot_style['y_axis_labelpad'])
+
         self.axes.set_title(
             title, fontsize=pbc_plot_style['title_size'], fontname=pbc_plot_style['title_font'], pad=pbc_plot_style['title_labelpad'])
 
-        #plt.figure(num=1, figsize=(
+        # plt.figure(num=1, figsize=(
         #    pbc_plot_style['figure_width'], pbc_plot_style['figure_height']), dpi=pbc_plot_style['dpi'], facecolor='w', edgecolor='k')
         if show_legend:
             self.axes.legend(prop={'size': pbc_plot_style['legend_font_size']})
@@ -236,7 +265,7 @@ class BindingCurve():
                         'Title': "pyBindingCurve plot"})
         plt.show()
 
-    def fit(self, system_parameters: dict, to_fit: dict, ycoords: np.array, bounds: dict=None):
+    def fit(self, system_parameters: dict, to_fit: dict, ycoords: np.array, bounds: dict = None):
         """Fit the parameters of a system to a set of data points
 
         Fit the system to a set of (usually) experimental datapoints.
@@ -264,12 +293,12 @@ class BindingCurve():
             tuple(dict, dict)
                 Tuple containing a dictionary of best fit systems parameters, then a dictionary containing the accuracy for fitted variables.
         """
-        system_parameters_copy=dict(system_parameters)
+        system_parameters_copy = dict(system_parameters)
         # Check we have parameters to fit, and nothing is missing
         if(len(to_fit.keys()) == 0):
             print("Nothing to fit, insert parameters to fit into to_fit dictionary")
             return None
-        missing=sorted(list(
+        missing = sorted(list(
             set(self.system.arguments) - set([*system_parameters_copy]+[*to_fit])))
         if(len(missing) > 0):
             print("Not all system parameters included in system_parameters or to_fit dictionaries, check all variables for the used equation are included")
@@ -277,24 +306,24 @@ class BindingCurve():
             return None
         # Add parameters for lmfit, accounting for bounds
         if bounds == None:
-            bounds={}
-        params=lmfit.Parameters()
+            bounds = {}
+        params = lmfit.Parameters()
         for varname in to_fit.keys():
-            bnd_min=-np.inf
-            bnd_max=np.inf
+            bnd_min = -np.inf
+            bnd_max = np.inf
             if varname in bounds.keys():
-                bnd_min=bounds[varname][0]
-                bnd_max=bounds[varname][1]
+                bnd_min = bounds[varname][0]
+                bnd_max = bounds[varname][1]
             params.add(
                 varname, value=to_fit[varname], min=bnd_min, max=bnd_max)
 
-        lmmini=lmfit.Minimizer(self._residual, params, fcn_args=(
+        lmmini = lmfit.Minimizer(self._residual, params, fcn_args=(
             system_parameters_copy, to_fit, ycoords))
-        result=lmmini.minimize()
+        result = lmmini.minimize()
 
         for k in system_parameters_copy.keys():
             if type(system_parameters_copy[k]) == lmfit.parameter.Parameter:
-                system_parameters_copy[k]=system_parameters_copy[k].value
+                system_parameters_copy[k] = system_parameters_copy[k].value
 
         return system_parameters_copy, dict((p, result.params[p].stderr) for p in result.params)
 
@@ -311,5 +340,5 @@ class BindingCurve():
 
         """
         for value in params:
-            system_parameters[value]=float(params[value])
+            system_parameters[value] = float(params[value])
         return self.system.query(system_parameters)-y
