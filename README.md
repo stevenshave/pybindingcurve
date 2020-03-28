@@ -26,7 +26,7 @@ MIT License - see
 
 # Authors
 PyBindingCurve was written by Steven Shave 
-![](email-address-image.gif)
+![](https://raw.githubusercontent.com/stevenshave/pybindingcurve/master/email-address-image.gif)
 
 
 Please get in contact for custom solutions, integration to existing workflows and training.
