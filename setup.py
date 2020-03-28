@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="PyBindingCurve",
+    name="pybindingcurve",
     version="0.2.1",
     author="Steven Shave",
     author_email="steve.nshave@gmail.com",
@@ -18,6 +18,11 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+        'numpy>=1.18.0',
+        'matplotlib>=3.2.1',
+        'lmfit>=1.0.0',
+        ],
     python_requires='>=3.6',
 )
 
