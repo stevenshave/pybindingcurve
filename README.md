@@ -2,7 +2,7 @@
 Binding curve simulation and experimental data fitting for multi component protein-ligand systems
 --
 
-![PyBindingCurve simulation](pybindingcurve_logo.png "Breaking a dimer")
+![PyBindingCurve simulation](https://raw.githubusercontent.com/stevenshave/pybindingcurve/master/pybindingcurve_logo.png "Breaking a dimer")
 
 [PyBindingCurve on github](https://github.com/stevenshave/pybindingcurve)
 
@@ -17,7 +17,7 @@ PyBindingCurve was developed using python 3.7.1, but should work on any Python 3
 * Matplotlib (2.x)
 * Numpy (1.15.x)
 * lm_fit (0.9.11)
-* mpmath (1.1.0)
+* mpmath (1.0.0)
 
 # Licence
 MIT License - see 
