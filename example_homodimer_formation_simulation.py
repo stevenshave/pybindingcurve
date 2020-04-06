@@ -1,22 +1,25 @@
-#!/usr/bin/env python
 """Simulation example homodimer formation"""
-# XXX Not working
+
 import numpy as np
 import pybindingcurve as pbc
 import time
 
-# Show the difference in speed between a kinetic solution and the highly efficient direct analytical method for homodimer formation
-start = time.time()
-print(
-    f"Homodimer formation kinetic\t\tpl={pbc.systems.System_kinetic_homodimerformation_pp().query({'p':4, 'kdpp':1})}, \ttook {round(time.time()-start,5)} seconds"
-)
-start = time.time()
-print(
-    f"Homodimer formation analytical \tpl={pbc.systems.System_analytical_homodimerformation_pp().query({'p':4, 'kdpp':1})}, \ttook {round(time.time()-start,5)} seconds"
-)
+# Define our system, homodimer formation has only:
+# p: protein, or monomer concentration
+# kdpp: the dissociation constant between the two species.
+# We can choose to work in a common unit, typically nM, or uM, as long as all
+# numbers are in the same unit, the result is valid.  We assume uM for all
+# concentrations bellow.
 
-# Simulate a binding curve
-system_parameters = {"p": np.linspace(0, 100), "kdpp": 10}
+
+# Define the system
+system_parameters = {"p": np.linspace(0, 10), "kdpp": 10}
+
+# Make a pbc BindingCurve defined by the 'homodimer formation' binding system
 mySystem = pbc.BindingCurve("homodimer formation")
+
+# We can now add the curve to the plot, name it with an optional name= value.
 mySystem.add_curve(system_parameters)
+print(mySystem.curves[0].ycoords)
+# Show the plot
 mySystem.show_plot()

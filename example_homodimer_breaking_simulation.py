@@ -4,12 +4,18 @@ import numpy as np
 import pybindingcurve as pbc
 import time
 
-# Simulate a binding curve
-system_parameters = {"p": np.linspace(
-    0, 100, num=100), "kdpp": 10, "i": 100, "kdpi": 1}
-# mySystem = pbc.BindingCurve("homodimer breaking")
-mySystem = pbc.BindingCurve(pbc.systems.System_analytical_homodimerbreaking_pp)
+# We can choose to work in a common unit, typically nM, or uM, as long as all
+# numbers are in the same unit, the result is valid.  We assume uM for all
+# concentrations bellow.
+
+# Define out homodimer breaking system, titrating in inhibitor
+system_parameters = {"p": 30, "kdpp": 10, "i": np.linspace(0,60), "kdpi": 1}
+
+# Create the PBC BindingCurve object, expecting a 'homodimer breaking' system.
+mySystem = pbc.BindingCurve("homodimer breaking")
+
+# Add the system to PBC, generating a plot.
 mySystem.add_curve(system_parameters)
-mySystem.add_curve(
-    {"p": np.linspace(0, 10, num=20), "kdpp": 1, "i": 10, "kdpi": 1}, "Blah curve")
+
+# Display the plot
 mySystem.show_plot()
