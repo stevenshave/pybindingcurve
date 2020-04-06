@@ -2,20 +2,34 @@
 
 import numpy as np
 import pybindingcurve as pbc
-import time
 
-# Show the difference in speed between a kinetic solution and the highly efficient direct analytical method for 1:1 binding
-start = time.time()
-print(
-    f"One to one binding test analytical\t\tpl={pbc.systems.System_analytical_one_to_one_pl().query({'p':4, 'l':10,'kdpl':1})}, \ttook {round(time.time()-start,5)} seconds"
-)
-start = time.time()
-print(
-    f"One to one binding test kinetic  \tpl={pbc.systems.System_kinetic_one_to_one_pl().query({'p':4, 'l':10,'kdpl':1})}, \ttook {round(time.time()-start,5)} seconds"
-)
+# Define our system, 1:1 binding has p and l which (usually) relate two protein
+# and ligand concentration, although can be any two species which bind.  kdpl
+# is the dissociation constant between the two species.
 
-#  # Simulate a binding curveñ
-system_parameters = {"p": np.linspace(0, 10), "l": 10, "kdpl": 1}
+# We can choose to work in a common unit, typically nM, or uM, as long as all
+# numbers are in the same unit, the result is valid.  We assume uM for all
+# concentrations bellow.
+system_parameters={'p':1, 'l':10,'kdpl':1}
+
+# Make a pbc BindingCurve defined by the simple 1:1 binding system
 mySystem = pbc.BindingCurve("1:1")
-mySystem.add_curve(system_parameters, readout=pbc.Readout.complex_concentration)
+print("Simulating 1:1 binding system with these parameters:")
+print(system_parameters)
+print("pl=",mySystem.query(system_parameters))
+
+# Simulate and visualise a binding curve.
+# First, we redefine the system parameters so that one variable is changing
+# in this case, we choose protein, performing a titration from 0 to 10 uM.
+system_parameters = {"p": np.linspace(0, 20), "l": 10, "kdpl": 1}
+
+# We can now add the curve to the plot, name it with an optional name= value.
+mySystem.add_curve(system_parameters)
+
+# Lets change the KD present in the system parameters into something higher
+# affinity (lower KD) and add it to the curve
+system_parameters2 = {"p": np.linspace(0, 20), "l": 10, "kdpl": 0.5}
+mySystem.add_curve(system_parameters2)
+
+# Show the plot
 mySystem.show_plot()

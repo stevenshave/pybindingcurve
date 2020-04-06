@@ -1,9 +1,12 @@
-#!/usr/bin/env python
 """Fitting example, determining Kd from 1:1:1 competition data"""
 
 import numpy as np
 import pybindingcurve as pbc
 import sys
+
+# We can choose to work in a common unit, typically nM, or uM, as long as all
+# numbers are in the same unit, the result is valid.  We assume uM for all
+# concentrations bellow.
 
 # Experimental data
 xcoords = np.array([0.0, 4.2, 8.4, 16.8, 21.1, 31.6, 35.8, 40.0])

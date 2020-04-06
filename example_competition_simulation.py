@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Simulation example 1:1:1 comptition binding"""
 
 import numpy as np
