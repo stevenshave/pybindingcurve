@@ -36,27 +36,93 @@ class Readout:
     """
     Class to change the system simulation readouts
 
-    Readout static methods change the system readout, taking in first system parameters as an argument, and then the calculated y-values as raw output from systems equations.
+    Readout is a container for static functions that change the system
+    readout when passed as an argument to add_curve. These functions
+    take as arguments the system parameters, and then the calculated
+    y-values as raw output from systems equations.  Return types are either
+    arrays or singular values.
 
     """
 
     @staticmethod
     def fraction_l(system_parameters: dict, y):
-        """ Readout as fraction ligand bound """
+        """
+        Transform readout to fraction ligand bound
+        
+        Readout function to change y values into fraction ligand bound
+
+        Parameters
+        ----------
+        system_parameters : dict
+            Dictionary of system parameters defining the system
+        y : float or array-like
+            System simulation or query values
+        
+        Returns
+        -------
+        tuple
+            Tuple's first value is the y-axis label which should be used with
+            this trasformation when plotting.
+            The next value is either the single, or array like object
+            containing the transformed values.
+        """
+
         return "Fraction l bound", y / system_parameters["l"]
 
     @staticmethod
     def fraction_possible_dimer(system_parameters: dict, y):
-        """  Readout as fraction total possible dimer  """
+        """
+        Transform readout to fraction possible dimer
+        
+        Readout function to change y values into fraction possible dimer.
+        As maximal achievable dimer concentration is half the total monomer
+        concentration, we must take this into account when calculating fraction
+        possible dimer
+
+        Parameters
+        ----------
+        system_parameters : dict
+            Dictionary of system parameters defining the system
+        y : float or array-like
+            System simulation or query values
+        
+        Returns
+        -------
+        tuple
+            Tuple's first value is the y-axis label which should be used with
+            this trasformation when plotting.
+            The next value is either the single, or array like object
+            containing the transformed values.
+        """
         return "Fraction possible dimer", y / (system_parameters["p"] / 2.0)
 
     @staticmethod
     def complex_concentration(system_parameters: dict, y):
-        """  Readout as complex concentration, (redundant as NULL achieves the same)"""
-        # Returns None, as we dont want to overwrite the systems default readout, which
-        # may be more descriptive than an arbitary [Complex]
-        return None, y
+        """
+        Readout as complex concentration, (redundant as NULL achieves the same)
+        
+        Redundant readout function, never used, but can be used for
+        better understanding Readouts.
+        
+        Parameters
+        ----------
+        system_parameters : dict
+            Dictionary of system parameters defining the system
+        y : float or array-like
+            System simulation or query values
+        
+        Returns
+        -------
+        tuple
+            Tuple's first value is the y-axis label which should be used with
+            this trasformation when plotting, although in this case the value
+            is None to indicate no transformation has been carried out and the
+            default which is assigned by the system should be used.
+            The next value is either the single, or array like object
+            containing the non-transformed values.
+        """
 
+        return None, y
 
 class _Curve:
     """
@@ -78,6 +144,24 @@ class _Curve:
 
 
 class BindingCurve:
+    """
+    BindingCurve clas, used to simulate systems
+
+    BindingCurve objects are governed by their underlying system, defining the
+    (usually) protein-ligand binding system being represented.  It also
+    provides the main interface for simulation, visualisation, querying and
+    the fitting of system parameters.
+
+    Parameters
+    ----------
+    binding_system : BindingSystem or str
+        Define the binding system which will govern this BindingCurve object.
+        Caan either be a BindingSystem object or a human readable string
+        shortcut, such as '1:1' or 'competition', etc.
+
+    """
+
+
     system = None
     _last_custom_readout = None
     curves = []
@@ -94,6 +178,7 @@ class BindingCurve:
     _last_known_changing_parameter = "X"
 
     def query(self, parameters, readout: Readout = None):
+
         if readout is None:
             return self.system.query(parameters)
         else:
@@ -116,7 +201,7 @@ class BindingCurve:
             if binding_system in ["simple", "1:1"]:
                 self.system = System_analytical_one_to_one_pl()
             # 1:1 kinetic
-            if binding_system in ["simplekinetic", "1:1kinetic"]:
+            if binding_system in ["simplekinetic", "simple kinetic", "1:1kinetic", "1:1 kinetic"]:
                 self.system = System_kinetic_one_to_one_pl()
             # Homodimer formation
             if binding_system in ["homodimerformation", "homodimer formation"]:
@@ -155,6 +240,22 @@ class BindingCurve:
     def add_curve(self, parameters: dict, name: str = None, readout: Readout = None):
         """
         Add a curve to the plot
+
+        Add a curve as specified by the system parameters to the 
+        pbc.BindingSystem's internal plot using the underlying binding system
+        specified on intitialisation.
+
+        Parameters
+        ----------
+        parameters : dict
+            Parameters defining the system to be simulated
+        name : str or None, optional
+            Name of curve to appear in plot legends
+        readout : Readout.function, optional
+            Change the system readout to one described by a custom readout
+            function.  Predefined standard readouts can be found in the static
+            pbc.Readout class.
+
         """
         if self.system is None:
             print("No system defined, could not proceed")
