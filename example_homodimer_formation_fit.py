@@ -14,15 +14,15 @@ ycoords = np.array([0., 0.22, 0.71, 1.24,1.88,2.48])
 
 # Construct the PyBindingCurve object, operating on a homodimer formation 
 # system and add experimental data to the plot
-mySystem = pbc.BindingCurve("homodimer formation")
-mySystem.add_scatter(xcoords, ycoords)
+my_system = pbc.BindingCurve("homodimer formation")
+my_system.add_scatter(xcoords, ycoords)
 
 # Known system parameters, kdpp will be added to this by fitting
 system_parameters = {"p": xcoords}
 
 # Now we call fit, passing the known parameters, followed by a dict of parameters to be fitted along
 # with an initial guess, pass the ycoords, and what the readout (ycoords) is
-fitted_system, fit_accuracy = mySystem.fit(system_parameters, {"kdpp": 0}, ycoords)
+fitted_system, fit_accuracy = my_system.fit(system_parameters, {"kdpp": 0}, ycoords)
 
 # Print out the fitted parameters
 for k, v in fit_accuracy.items():
@@ -32,7 +32,7 @@ for k, v in fit_accuracy.items():
 fitted_system["p"] = np.linspace(0, np.max(xcoords))
 
 # Add a new curve, simulated using fitted parameters to our BindingCurve object
-mySystem.add_curve(fitted_system)
+my_system.add_curve(fitted_system)
 
 # Show the plot
-mySystem.show_plot()
+my_system.show_plot()

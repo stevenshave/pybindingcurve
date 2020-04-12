@@ -8,14 +8,14 @@ import time
 # numbers are in the same unit, the result is valid.  We assume uM for all
 # concentrations bellow.
 
-# Define out homodimer breaking system, titrating in inhibitor
+# Define our homodimer breaking system, titrating in inhibitor
 system_parameters = {"p": 30, "kdpp": 10, "i": np.linspace(0,60), "kdpi": 1}
 
 # Create the PBC BindingCurve object, expecting a 'homodimer breaking' system.
-mySystem = pbc.BindingCurve("homodimer breaking")
+my_system = pbc.BindingCurve("homodimer breaking")
 
 # Add the system to PBC, generating a plot.
-mySystem.add_curve(system_parameters)
+my_system.add_curve(system_parameters)
 
 # Display the plot
-mySystem.show_plot()
+my_system.show_plot()

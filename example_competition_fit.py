@@ -10,18 +10,18 @@ import sys
 
 # Experimental data
 xcoords = np.array([0.0, 4.2, 8.4, 16.8, 21.1, 31.6, 35.8, 40.0])
-ycoords = np.array([0.15, 0.33, 1.05, 3.08, 4.30, 6.33, 6.49, 6.96])
+ycoords = np.array([150, 330, 1050, 3080, 4300, 6330, 6490, 6960])
 
 # Construct the PyBindingCurve object, operating on a 1:1:1 (compeittion) system and add experimental data to the plot
 mySystem = pbc.BindingCurve("1:1:1")
 mySystem.add_scatter(xcoords, ycoords)
 
 # Known system parameters, kdpl will be added to this by fitting
-system_parameters = {"p": xcoords, "l": 10, "i": 10, "kdpl": 10}
+system_parameters = {"p": xcoords, "l": 10, "i": 10, "kdpl": 10, 'ymin':np.min(ycoords)}
 
 # Now we call fit, passing the known parameters, followed by a dict of parameters to be fitted along
 # with an initial guess, pass the ycoords, and what the readout (ycoords) is
-fitted_system, fit_accuracy = mySystem.fit(system_parameters, {"kdpi": 0}, ycoords)
+fitted_system, fit_accuracy = mySystem.fit(system_parameters, {"kdpi": 0, 'ymax':np.max(ycoords)}, ycoords)
 
 # Print out the fitted parameters
 for k, v in fit_accuracy.items():
@@ -34,4 +34,4 @@ fitted_system["p"] = np.linspace(0, np.max(xcoords))
 mySystem.add_curve(fitted_system)
 
 # Show the plot
-mySystem.show_plot()
+mySystem.show_plot(ylabel="Signal")

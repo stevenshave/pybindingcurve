@@ -145,7 +145,7 @@ class _Curve:
 
 class BindingCurve:
     """
-    BindingCurve clas, used to simulate systems
+    BindingCurve class, used to simulate systems
 
     BindingCurve objects are governed by their underlying system, defining the
     (usually) protein-ligand binding system being represented.  It also
@@ -178,7 +178,27 @@ class BindingCurve:
     _last_known_changing_parameter = "X"
 
     def query(self, parameters, readout: Readout = None):
+        """
+        Query a binding system
 
+        Get the readout from from a set of system parameters
+
+        Parameters
+        ----------
+        parameters : dict
+            System parameters defining the system being queried.  Will usually
+            contain protein, ligand etc concentrations, and KDs
+        readout : func or None
+            Change the readout of the system, can be None for unmodified
+            (usually complex concentration), a static member function from
+            the pbc.Readout class, or a custom written function following the
+            the same defininition as those in pbc.Readout.
+
+        Returns
+        -------
+        Single floating point, or array-like
+            Response/signal of the system
+        """
         if readout is None:
             return self.system.query(parameters)
         else:
@@ -312,14 +332,17 @@ class BindingCurve:
         """
         Add scatterpoints to a plot, useful to represent real measurement data
 
-        Args:
+        X and Y coordinates may be added to the internal plot, useful when
+        fitting to experimental data, and wanting to plot the true experimental
+        values alongside a curve generated with fitted parameters.
 
-            xcoords (np.ndarray or list): x-coordinates
-            ycoords (np.ndarray or list): y-coordinates
+        Parameters
+        ----------
+        xcoords : list or array-like
+            x-coordinates
+        ycoords : list or array-like
+            y-coordinates
 
-        Returns:
-
-            None
         """
         self._initialize_plot()
         self.axes.scatter(xcoords, ycoords)
@@ -343,27 +366,39 @@ class BindingCurve:
         svg_filename: str = None,
         show_legend: bool = True,
     ):
-        """Show the PyBindingCurve plot
+        """
+        Show the PyBindingCurve plot
 
-        Args:
+        Function to display the internal state of the pbc BindingCurve objects
+        plot.
 
-            title (str):  The title of the plot (default = "System simulation")
-            xlabel (str):  X-axis label (default = None)
-            ylabel (str):  Y-axis label (default = None, causing label to be "[Complex]")
-            min_x (float): X-axis minimum (default = None)
-            max_x (float): X-axis maximum (default = None)
-            min_y (float): Y-axis minimum (default = None)
-            max_y (float): Y-axis maximum (default = None)
-            log_x_axis (bool): log scale on X-axis (default = False)
-            log_y_axis (bool): log scale on Y-axis (default = False)
-            ma_style (bool): apply MA styling, making plots appear like GraFit plots
-            png_filename(str): file name/location where png will be written
-            svg_filename(str): file name/location where svg will be written
+        Parameters
+        ----------
+        title : str
+            The title of the plot (default = "System simulation")
+        xlabel: str
+            X-axis label (default = None)
+        ylabel : str
+            Y-axis label (default = None, causing label to be "[Complex]")
+        min_x : float
+            X-axis minimum (default = None)
+        max_x : float
+            X-axis maximum (default = None)
+        min_y : float
+            Y-axis minimum (default = None)
+        max_y : float
+            Y-axis maximum (default = None)
+        log_x_axis : bool
+            Log scale on X-axis (default = False)
+        log_y_axis : bool
+            Log scale on Y-axis (default = False)
+        ma_style : bool
+            Apply MA styling, making plots appear like GraFit plots
+        png_filename :  str
+            File name/location where png will be written
+        svg_filename : str
+            File name/location where svg will be written
 
-
-        Returns:
-
-            None
         """
 
         if min_x is not None:
@@ -430,9 +465,6 @@ class BindingCurve:
             pad=pbc_plot_style["title_labelpad"],
         )
 
-        # plt.figure(num=1, figsize=(
-        # pbc_plot_style['figure_width'], pbc_plot_style['figure_height']),
-        # dpi=pbc_plot_style['dpi'], facecolor='w', edgecolor='k')
         if show_legend:
             self.axes.legend(prop={"size": pbc_plot_style["legend_font_size"]})
 
@@ -468,23 +500,26 @@ class BindingCurve:
         for the parameters.  The function returns a dictionary of the
         accuracy of fitted parameters, which may be captured, or not.
 
-        Args:
+        Parameters:
+        system_parameters : dict
+            Dictionary containing system parameters, will be used as arguments
+            to the systems equations.
+        to_fit : dict
+            Dictionary containing system parameters to fit.
+        xcoords : np.array
+            X coordinates of data the system parameters should be fit to
+        ycoords : np.array
+            Y coordinates of data the system parameters should be fit to
+        bounds : dict
+            Dictionary of tuples, indexed by system parameters denoting the
+            lower and upper bounds of a system parameter being fit, optional,
+            default = None
 
-            system_parameters (dict):  Dictionary containing system
-                parameters, will be used as arguments to the systems equations.
-            to_fit: (dict): Dictionary containing system parameters to fit.
-            xcoords: (np.array): X coordinates of data the system
-                parameters should be fit to
-            ycoords: (np.array): Y coordinates of data the system
-                parameters should be fit to
-            bounds: (dict): Dictionary of tuples, indexed by system parameters
-                denoting the lower and upper bounds of a system parameter
-                being fit (default = None)
-
-        Returns:
-
-            tuple(dict, dict)
-                Tuple containing a dictionary of best fit systems parameters, then a dictionary containing the accuracy for fitted variables.
+        Returns
+        -------
+        tuple (dict, dict)
+            Tuple containing a dictionary of best fit systems parameters,
+            then a dictionary containing the accuracy for fitted variables.
         """
         system_parameters_copy = dict(system_parameters)
         # Check we have parameters to fit, and nothing is missing
