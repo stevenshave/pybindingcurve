@@ -16,7 +16,7 @@ PyBindingCurve was developed using python 3.7.1 but should work with any Python 
 - mpmath (1.1.0)
 
 # Licence
-[MIT License](https://stevenshave.github.io/pybindingcurve/LICENSE)
+[MIT License](https://github.com/stevenshave/pybindingcurve/blob/master/LICENSE)
 
 
 
