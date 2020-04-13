@@ -35,4 +35,4 @@ fitted_system["p"] = np.linspace(0, np.max(xcoords), num=200)
 mySystem.add_curve(fitted_system)
 
 # Show the plot
-mySystem.show_plot()
+mySystem.show_plot(ylabel="Signal")
