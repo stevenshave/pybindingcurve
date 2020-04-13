@@ -12,15 +12,15 @@ mySystem = pbc.BindingCurve("competition")
 
 # First, lets simulate a curve with no inhibitor present (essentially 1:1)
 mySystem.add_curve(
-    {"p": np.linspace(0, 40, 20), "l": 10, "i": 0, "kdpi": 1, "kdpl": 10}, "pl"
+    {"p": np.linspace(0, 40, 20), "l": 10, "i": 0, "kdpi": 1, "kdpl": 10}, "No inhibitor"
 )
 # Add curve with inhibitor (i)
 mySystem.add_curve(
-    {"p": np.linspace(0, 40, 20), "l": 10, "i": 10, "kdpi": 1, "kdpl": 10}, "pl"
+    {"p": np.linspace(0, 40, 20), "l": 10, "i": 10, "kdpi": 1, "kdpl": 10}, "[i] = 10 µM"
 )
 # Add curve with more inhibtor (i)
 mySystem.add_curve(
-    {"p": np.linspace(0, 40, 20), "l": 10, "i": 25, "kdpi": 1, "kdpl": 10}, "pl"
+    {"p": np.linspace(0, 40, 20), "l": 10, "i": 25, "kdpi": 1, "kdpl": 10}, "[i] = 25 uM"
 )
 
 # Display the plot
