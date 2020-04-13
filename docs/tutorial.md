@@ -25,4 +25,4 @@ The following pages contain tutorials for simulation and fitting to a number of 
  - [Simulation](simulate_homodimerbreaking.md)
  - [Fitting](fit_homodimerbreaking.md)
 
-[Return to main site](Readme.md)
+[Return to main site](index.md)
