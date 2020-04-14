@@ -25,17 +25,22 @@ Next, we initialise a PBC BindingCurve object.  Upon initialisation, either a st
 my_system=pbc.BindingCurve(“1:1”)
 There are three main modes of operation within PyBindingCurve; 1) Visualisation of protein-ligand behaviour within a titration, simulating a range of conditions. 2) Simulation of a single system state with discrete parameters. 3) Fitting of experimental data.  A description of these follows:
 1.	Simulation with visualisation: pass a dictionary containing system parameters to the add_curve function of the BindingCurve object (my_system). Required system parameters depend on the system being modelled.  In the case of 1:1 binding, we require p (protein concentration), l (ligand concentration), kdpl (dissociation constant between p and l), and optionally, a ymax and/or ymin variable if dealing with simulation of a signal.  add_curve expects one changing parameter, which will be the x-axis. By default, complex concentration will be the readout of a system, but that can be changed by passing different readout options to add_curve.  See the ‘pbc.Readout’ section bellow for further information. With one curve added, we can add more curves, or simply display the plot by calling the show_plot function.
-```
+
+```python
     system_parameters={‘p’:np.linspace(0,20), ‘l’:20, ‘kdpl’:10)
     my_system.add_curve(system_parameters)
     my_system.show_plot()
 ```
+
 2.	Single point simulation: if you require not a simulation with a curve, but a single point with set concentrations and KDs, then query may be called with a dictionary of system parameters and data returned.  Additionally, if the dictionary contains a NumPy array, representing a titration (for example, the system parameters above), then a NumPy array of the readout is returned instead of a single value:
-```
+
+```python
     complex_conc = my_system.query({‘p’:10, ‘l’:20, ‘kdpl’:10})
 ```
+
 3.	Fit experimental data to a system to obtain experimental parameters, such as KD. A common situation is determining KD from measurements obtained from experimental data.  We can perform this as follows, with x- and y-coordinates, we add the experimental points to the plot, define system parameters that we do know (protein concentrations, and the amount of ligand), and then call fit on the system passing in parameters to fit and an initial guess (1), along with the known parameters.  We then iterate and print the fitted parameters.
-```
+
+```python
     xcoords = np.array([0.0, 20.0, 40.0, 60.0, 80.0, 100.0, 120.0, 140.0, 160.0, 180.0, 200.0])
     ycoords = np.array([0.544, 4.832, 6.367, 7.093, 7.987, 9.005, 9.079, 8.906, 9.010, 10.046, 9.225])
     my_system.add_scatter(xcoords, ycoords)
