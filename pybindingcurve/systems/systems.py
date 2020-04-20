@@ -8,7 +8,21 @@ import mpmath
 
 
 class BindingSystem:
+    """
+    BindingSystem class, used to determine the type of binding systems being used
 
+    BindingSystem objects are governed with differnt protein-ligand binding 
+    system being represented. It also provides methods for visualisation, 
+    querying and the fitting of system parameters.
+
+    Parameters
+    ----------
+    bindingsystem : func
+        A function deriving the concentration of complex formed. This fuction 
+        may be varied based on different protein-ligand binding systems.
+    analytical: bool
+        Perform a analytical analysis (default = False)
+    """
     system = None
     analytical = False
     arguments = []
@@ -68,6 +82,24 @@ class BindingSystem:
             self.arguments.remove("interval")
 
     def _remove_ymin_ymax_keys_from_dict_in_place(self, d: dict):
+        """
+        Remove minimum and maximum readout from the orignal system parameters
+        (Replace the original dict)
+
+        Output the original dict contains the orignal system parameters with 
+        removal the minimum and maximum readout signel of the system
+
+        Parameters
+        ----------
+        d : dict
+            Parameters defining the binding system to be simulated
+        
+        Returns
+        -------
+        dict
+            Return the original dict contains original system parameters without 
+            minimum and maximum readout.  
+        """
         if "ymin" in d.keys():
             del d["ymin"]
         if "ymax" in d.keys():
@@ -75,6 +107,24 @@ class BindingSystem:
         return d
 
     def _remove_ymin_ymax_keys_from_dict_return_new(self, input: dict):
+        """
+        Remove minimum and maximum readout from the orignal system parameters
+        (Return a new dict)
+
+        Output a new dict contains the orignal system parameters with removal
+        the minimum and maximum readout signel of the system
+
+        Parameters
+        ----------
+        input : dict
+            Parameters defining the binding system to be simulated
+        
+        Returns
+        -------
+        dict
+            Generate a new dict contains original system parameters without 
+            minimum and maximum readout.  
+        """
         d = dict(input)
         if "ymin" in d.keys():
             del d["ymin"]
@@ -95,6 +145,8 @@ class BindingSystem:
         
         Returns
         -------
+        Single floating point of the concentration of the binding complex, or 
+            array-like Response/signal of the system.
         """
         results = None
 
@@ -118,7 +170,7 @@ class BindingSystem:
             # At least 1 changing parameter
             if len(changing_parameters) == 1:
                 results = None
-                num_solutions = getattr(self, "num_solutions", 1)
+                num_solutions = getattr(self, "num_solutions", 1) # Get attribure of num_solutions in BindingSystem class (default = 1)
                 if num_solutions == 1:
                     results = np.empty(len(parameters[changing_parameters[0]]))
                 else:
@@ -153,6 +205,21 @@ class BindingSystem:
         return results  # We get here if its not a numpy array, but a system with multiple solutions queried at for a single point
 
     def _are_ymin_ymax_present(self, parameters: dict):
+        """
+        Check the existance of the minimum or maximum readout
+
+        Check the minimum or maximum readout signal set by user is in 
+        the binding system parameters 
+
+        Parameters
+        ----------
+        parameters : dict
+            Parameters defining the binding system to be simulated.
+        
+        Returns
+        -------
+        Boolean (True or False)
+        """
         if "ymin" in parameters.keys():
             if "ymax" in parameters.keys():
                 return True
