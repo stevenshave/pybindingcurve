@@ -156,7 +156,7 @@ class BindingCurve:
     BindingCurve class, used to simulate systems
 
     BindingCurve objects are governed by their underlying system, defining the
-    (usually) protein-ligand binding system being represented.  It also
+    (usually) protein-ligand binding system being represented. It also
     provides the main interface for simulation, visualisation, querying and
     the fitting of system parameters.
 
