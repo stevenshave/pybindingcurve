@@ -8,12 +8,30 @@ import mpmath
 
 
 class BindingSystem:
+
     system = None
     analytical = False
     arguments = []
     default_readout = None
 
     def _find_changing_parameters(self, params: dict):
+        """
+        Find the changing parameter
+
+        Determine which parameter is changing with titration, including the
+        concentration of the protein or ligand. A set of varied concentrations 
+        of parameter are in the form of array-like or list data type   
+      
+        Parameters
+        ----------
+        params : dict
+            Parameters defining the binding system to be simulated.
+        
+        Returns
+        -------
+        A list containing the keys of params indicating the name of 
+            changing parameters.
+        """
         changing_list = []
         for p in params.keys():
             if isinstance(params[p], np.ndarray) or isinstance(params[p], list):
@@ -24,6 +42,23 @@ class BindingSystem:
             return changing_list
 
     def __init__(self, bindingsystem: callable, analytical: bool = False):
+        """
+        Construct BindingSystem objects
+
+        BindingSystem objects are initialised with various subclasses under 
+        the BindingSystem super class definding different protein-ligand 
+        binding systems, such as 'System_analytical_one_to_one_pl' or 
+        'System_analytical_homodimerformation_pp', etc.
+
+        Parameters
+        ----------
+        bindingsystem : func
+            A function deriving the concentration of complex formed. This
+            fuction may be varied based on different protein-ligand binding
+            systems.
+        analytical: bool
+            Perform a analytical analysis (default = False)
+        """
         self._system = bindingsystem
         self.analytical = analytical
         self.arguments = list(signature(bindingsystem).parameters.keys())
@@ -48,6 +83,19 @@ class BindingSystem:
         return d
 
     def query(self, parameters: dict):
+        """
+        Query a binding system
+
+        Get the readout from from a set of system parameters
+
+        Parameters
+        ----------
+        parameters : dict
+            Parameters defining the binding system to be simulated.
+        
+        Returns
+        -------
+        """
         results = None
 
         # Check that all required parameters are present and abort if not.

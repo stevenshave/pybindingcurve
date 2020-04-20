@@ -41,7 +41,6 @@ class Readout:
     take as arguments the system parameters, and then the calculated
     y-values as raw output from systems equations.  Return types are either
     arrays or singular values.
-
     """
 
     @staticmethod
@@ -133,10 +132,19 @@ class _Curve:
     """
 
     def __init__(self, xcoords: np.array, ycoords: np.array, series_name: str = ""):
-        """Curve constructor
+        """
+        Curve constructor
 
         Called by PyBindingCurve
 
+        Parameters
+        ----------
+        xcoors : np.array
+            X coordinates of the binding system to be used to present a binding curve
+        ycoors : np.array
+            Y coordinates of the binding system to be used to present a binding curve
+        series_name : str, Optional 
+            Name of curve to appear in plot legends
         """
         self.xcoords = xcoords
         self.ycoords = ycoords
@@ -158,10 +166,7 @@ class BindingCurve:
         Define the binding system which will govern this BindingCurve object.
         Caan either be a BindingSystem object or a human readable string
         shortcut, such as '1:1' or 'competition', etc.
-
     """
-
-
     system = None
     _last_custom_readout = None
     curves = []
@@ -187,7 +192,7 @@ class BindingCurve:
         ----------
         parameters : dict
             System parameters defining the system being queried.  Will usually
-            contain protein, ligand etc concentrations, and KDs
+            contain protein, ligand etc concentrations, and KDs.
         readout : func or None
             Change the readout of the system, can be None for unmodified
             (usually complex concentration), a static member function from
@@ -205,6 +210,23 @@ class BindingCurve:
             return readout(parameters, self.system.query(parameters))[1]
 
     def _find_changing_parameters(self, params: dict):
+        """
+        Find the changing parameter
+
+        Determine which parameter is changing with titration, including the
+        concentration of the protein or ligand. A set of varied concentrations 
+        of parameter are in the form of array-like or list data type   
+      
+        Parameters
+        ----------
+        params : dict
+            Parameters defining the binding system to be simulated.
+        
+        Returns
+        -------
+        A list containing the keys of params indicating the name of 
+            changing parameters.
+        """
         changing_list = []
         for p in params.keys():
             if isinstance(params[p], np.ndarray) or isinstance(params[p], list):
@@ -215,6 +237,22 @@ class BindingCurve:
             return changing_list
 
     def __init__(self, binding_system: [str, BindingSystem]):
+        """
+        Construct BindingCurve objects
+
+        BindingCurve objects are initialised with different protein-ligand 
+        binding systems definded by user. This method can also initialises 
+        the objects as an interface throught the pbc.BindingSystem class, 
+        providing for simulation, visualisation, querying and the fitting 
+        of system parameters. 
+
+        Parameters
+        ----------
+        binding_system : str or BindingSystem
+            Define the binding system which will govern this BindingCurve 
+            object. Can either be a BindingSystem object or a human readable 
+            string shortcut, such as '1:1' or 'competition', etc.
+        """
         if isinstance(binding_system, str):
             binding_system = binding_system.lower()
             # 1:1
@@ -249,6 +287,12 @@ class BindingCurve:
                 return None
 
     def _initialize_plot(self):
+        """
+        Initialise setup to being ready for curve plotting
+
+        Control setups needed for plotting a binding plot including layouts 
+        of subplots, grid lines, and y-axis view limits, etc.   
+        """
         if self.fig is None:
             self.fig, self.axes = plt.subplots(
                 nrows=1, ncols=1, figsize=pbc_plot_style["fig_size"]
@@ -275,7 +319,6 @@ class BindingCurve:
             Change the system readout to one described by a custom readout
             function.  Predefined standard readouts can be found in the static
             pbc.Readout class.
-
         """
         if self.system is None:
             print("No system defined, could not proceed")
@@ -342,7 +385,6 @@ class BindingCurve:
             x-coordinates
         ycoords : list or array-like
             y-coordinates
-
         """
         self._initialize_plot()
         self.axes.scatter(xcoords, ycoords)
@@ -398,7 +440,6 @@ class BindingCurve:
             File name/location where png will be written
         svg_filename : str
             File name/location where svg will be written
-
         """
 
         if min_x is not None:
@@ -491,7 +532,8 @@ class BindingCurve:
         ycoords: np.array,
         bounds: dict = None,
     ):
-        """Fit the parameters of a system to a set of data points
+        """
+        Fit the parameters of a system to a set of data points
 
         Fit the system to a set of (usually) experimental datapoints.
         The fitted parameters are stored in the system_parameters dict
@@ -500,7 +542,8 @@ class BindingCurve:
         for the parameters.  The function returns a dictionary of the
         accuracy of fitted parameters, which may be captured, or not.
 
-        Parameters:
+        Parameters
+        ----------
         system_parameters : dict
             Dictionary containing system parameters, will be used as arguments
             to the systems equations.
@@ -567,16 +610,25 @@ class BindingCurve:
         )
 
     def _residual(self, params, system_parameters: dict, to_fit: dict, y: np.array):
-        """Residual function for fitting parameters.
+        """
+        Residual function for fitting parameters.
 
-        Helper function for lm_fit, calculating residual remaining for probed system parameters.
+        Helper function for lm_fit, calculating residual remaining for probed 
+        system parameters.
 
-        Args:
-
-        system_parameters (dict): Dictionary containing system
-                parameters, will be used as arguments to the systems equations.
-        to_fit: (dict): Dictionary containing system parameters to fit.
-
+        Parameters
+        ----------
+        params : dict
+            A dictionary of the parameters required to be evaluated to a fit model.
+        system_parameters : dict 
+            Dictionary containing system parameters, will be used as arguments to the systems equations.
+        to_fit : dict
+            Dictionary containing system parameters to fit.
+        y : np.array
+            A array-like data containing the system parameters should be fit to
+        Returns
+        -------
+            The cost between the experimental datapoints and the values derived from the model.
         """
         for value in params:
             system_parameters[value] = float(params[value])
