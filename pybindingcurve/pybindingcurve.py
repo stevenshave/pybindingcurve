@@ -269,22 +269,29 @@ class BindingCurve:
                 "homodimerformationkinetic",
                 "homodimer formation kinetic",
             ]:
-                self.system = System_kinetic_homodimerformation()
+                self.system = System_kinetic_homodimerformation_pp()
 
             # Competition
             if binding_system in ["competition", "1:1:1"]:
                 self.system = System_analytical_competition_pl()
-            # Competition
+
+            if binding_system in ["competition kinetic", "competitionkinetic"]:
+                self.system = System_kinetic_competition_pl()
+
+            # Homodimer breaking
             if binding_system in ["homodimerbreaking", "homodimer breaking"]:
                 self.system = System_kinetic_homodimerbreaking_pp()
+
+            print(self.system)
+            print(type(self.system))
         else:
             if issubclass(binding_system, BindingSystem):
                 self.system = binding_system()
-            else:
-                print(
-                    "Invalid system specified, try one of: [simple, homodimer, competition, homdimer breaking], or pass a system object"
-                )
-                return None
+        if self.system == None:
+            print(
+                "Invalid system specified, try one of: ['simple', 'homodimer', 'competition', 'homdimer breaking'], or pass a system object"
+            )
+            return None
 
     def _initialize_plot(self):
         """
