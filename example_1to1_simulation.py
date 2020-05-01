@@ -13,23 +13,23 @@ import pybindingcurve as pbc
 system_parameters={'p':1, 'l':10,'kdpl':1}
 
 # Make a pbc BindingCurve defined by the simple 1:1 binding system
-mySystem = pbc.BindingCurve("1:1")
+my_system = pbc.BindingCurve("1:1")
 print("Simulating 1:1 binding system with these parameters:")
 print(system_parameters)
-print("pl=",mySystem.query(system_parameters))
+print("pl=",my_system.query(system_parameters))
 
 # Simulate and visualise a binding curve.
 # First, we redefine the system parameters so that one variable is changing
 # in this case, we choose protein, performing a titration from 0 to 10 uM.
-system_parameters = {"p": np.linspace(0, 20), "l": 10, "kdpl": 1}
+system_parameters = {"p": np.linspace(0, 20), "l": 10, "kdpl": 1, 'ymax':1200}
 
 # We can now add the curve to the plot, name it with an optional name= value.
-mySystem.add_curve(system_parameters)
+my_system.add_curve(system_parameters)
 
 # Lets change the KD present in the system parameters into something higher
 # affinity (lower KD) and add it to the curve
 system_parameters2 = {"p": np.linspace(0, 20), "l": 10, "kdpl": 0.5}
-mySystem.add_curve(system_parameters2)
+my_system.add_curve(system_parameters2)
 
 # Show the plot
-mySystem.show_plot()
+my_system.show_plot()

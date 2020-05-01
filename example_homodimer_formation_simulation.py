@@ -16,10 +16,10 @@ import time
 system_parameters = {"p": np.linspace(0, 10), "kdpp": 10}
 
 # Make a pbc BindingCurve defined by the 'homodimer formation' binding system
-mySystem = pbc.BindingCurve("homodimer formation")
+my_system = pbc.BindingCurve("homodimer formation")
 
 # We can now add the curve to the plot, name it with an optional name= value.
-mySystem.add_curve(system_parameters)
-print(mySystem.curves[0].ycoords)
+my_system.add_curve(system_parameters)
+print(my_system.curves[0].ycoords)
 # Show the plot
-mySystem.show_plot()
+my_system.show_plot()
