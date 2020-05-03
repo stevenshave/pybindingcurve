@@ -10,18 +10,18 @@ import pybindingcurve as pbc
 # We can choose to work in a common unit, typically nM, or uM, as long as all
 # numbers are in the same unit, the result is valid.  We assume uM for all
 # concentrations bellow.
-system_parameters={'p':1, 'l':10,'kdpl':1}
+system_parameters = {'p': 1, 'l': 10, 'kdpl': 1}
 
 # Make a pbc BindingCurve defined by the simple 1:1 binding system
 my_system = pbc.BindingCurve("1:1")
 print("Simulating 1:1 binding system with these parameters:")
 print(system_parameters)
-print("pl=",my_system.query(system_parameters))
+print("pl=", my_system.query(system_parameters))
 
 # Simulate and visualise a binding curve.
 # First, we redefine the system parameters so that one variable is changing
 # in this case, we choose protein, performing a titration from 0 to 10 uM.
-system_parameters = {"p": np.linspace(0, 20), "l": 10, "kdpl": 1, 'ymax':1200}
+system_parameters = {"p": np.linspace(0, 20), "l": 10, "kdpl": 1}
 
 # We can now add the curve to the plot, name it with an optional name= value.
 my_system.add_curve(system_parameters)
