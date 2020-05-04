@@ -205,7 +205,8 @@ class BindingCurve:
         Single floating point, or array-like
             Response/signal of the system
         """
-        return readout if readout is None else readout(parameters, self.system.query(parameters))[1]
+
+        return self.system.query(parameters) if readout is None else readout(parameters, self.system.query(parameters))[1]
 
     def _find_changing_parameters(self, params: dict):
         """
