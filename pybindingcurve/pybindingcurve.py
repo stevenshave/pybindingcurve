@@ -47,7 +47,7 @@ class Readout:
     def fraction_l(system_parameters: dict, y):
         """
         Transform readout to fraction ligand bound
-        
+
         Readout function to change y values into fraction ligand bound
 
         Parameters
@@ -56,7 +56,7 @@ class Readout:
             Dictionary of system parameters defining the system
         y : float or array-like
             System simulation or query values
-        
+
         Returns
         -------
         tuple
@@ -72,7 +72,7 @@ class Readout:
     def fraction_possible_dimer(system_parameters: dict, y):
         """
         Transform readout to fraction possible dimer
-        
+
         Readout function to change y values into fraction possible dimer.
         As maximal achievable dimer concentration is half the total monomer
         concentration, we must take this into account when calculating fraction
@@ -84,7 +84,7 @@ class Readout:
             Dictionary of system parameters defining the system
         y : float or array-like
             System simulation or query values
-        
+
         Returns
         -------
         tuple
@@ -99,17 +99,17 @@ class Readout:
     def complex_concentration(system_parameters: dict, y):
         """
         Readout as complex concentration, (redundant as NULL achieves the same)
-        
+
         Redundant readout function, never used, but can be used for
         better understanding Readouts.
-        
+
         Parameters
         ----------
         system_parameters : dict
             Dictionary of system parameters defining the system
         y : float or array-like
             System simulation or query values
-        
+
         Returns
         -------
         tuple
@@ -122,6 +122,7 @@ class Readout:
         """
 
         return None, y
+
 
 class _Curve:
     """
@@ -204,10 +205,7 @@ class BindingCurve:
         Single floating point, or array-like
             Response/signal of the system
         """
-        if readout is None:
-            return self.system.query(parameters)
-        else:
-            return readout(parameters, self.system.query(parameters))[1]
+        return readout if readout is None else readout(parameters, self.system.query(parameters))[1]
 
     def _find_changing_parameters(self, params: dict):
         """
@@ -216,25 +214,19 @@ class BindingCurve:
         Determine which parameter is changing with titration, including the
         concentration of the protein or ligand. A set of varied concentrations 
         of parameter are in the form of array-like or list data type   
-      
+
         Parameters
         ----------
         params : dict
             Parameters defining the binding system to be simulated.
-        
+
         Returns
         -------
         A list containing the keys of params indicating the name of 
             changing parameters.
         """
-        changing_list = []
-        for p in params.keys():
-            if isinstance(params[p], np.ndarray) or isinstance(params[p], list):
-                changing_list.append(p)
-        if len(changing_list) == 0:
-            return None
-        else:
-            return changing_list
+        changing_list = [p for p in params.keys() if isinstance(params[p], np.ndarray) or isinstance(params[p], list)]
+        return changing_list if len(changing_list)>0 else None
 
     def __init__(self, binding_system: [str, BindingSystem]):
         """
@@ -257,33 +249,50 @@ class BindingCurve:
             binding_system = binding_system.lower()
             # 1:1
             if binding_system in ["simple", "1:1"]:
-                self.system = System_analytical_one_to_one_pl()
+                self.system = System_analytical_one_to_one__pl()
+            # 1:1 lagrange
+            if binding_system in ["simplelagrange", "simple lagrange", "1:1lagrange", "1:1 lagrange"]:
+                self.system = System_lagrange_one_to_one__pl()
             # 1:1 kinetic
             if binding_system in ["simplekinetic", "simple kinetic", "1:1kinetic", "1:1 kinetic"]:
-                self.system = System_kinetic_one_to_one_pl()
+                self.system = System_kinetic_one_to_one__pl()
+            
             # Homodimer formation
             if binding_system in ["homodimerformation", "homodimer formation"]:
-                self.system = System_analytical_homodimerformation_pp()
-            # Homodimer formation kinetic - only used for testing purposes
-            if binding_system in [
-                "homodimerformationkinetic",
-                "homodimer formation kinetic",
-            ]:
-                self.system = System_kinetic_homodimerformation_pp()
-
+                self.system = System_analytical_homodimerformation__pp()
+            # Homodimer formation lagrange
+            if binding_system in ["homodimerformationlagrange","homodimer formation lagrange"]:
+                self.system = System_lagrange_homodimerformation__pp()
+            # Homodimer formation kinetic
+            if binding_system in ["homodimerformationkinetic","homodimer formation kinetic"]:
+                self.system = System_kinetic_homodimerformation__pp()
+            
             # Competition
             if binding_system in ["competition", "1:1:1"]:
-                self.system = System_analytical_competition_pl()
-
+                self.system = System_analytical_competition__pl()
+            if binding_system in ["competition lagrange", "competitionlagrange"]:
+                self.system = System_lagrange_competition_pl()
             if binding_system in ["competition kinetic", "competitionkinetic"]:
                 self.system = System_kinetic_competition_pl()
 
-            # Homodimer breaking
-            if binding_system in ["homodimerbreaking", "homodimer breaking"]:
-                self.system = System_kinetic_homodimerbreaking_pp()
+            # Homodimer breaking lagrange
+            if binding_system in ["homodimerbreaking", "homodimer breaking", "homodimerbreakinglagrange", "homodimer breaking lagrange"]:
+                self.system = System_lagrange_homodimerbreaking__pp()
+            # Homodimer breaking analytical
+            if binding_system in ["homodimerbreakinganalytical", "homodimer breaking analytical"]:
+                self.system = System_analytical_homodimerbreaking_pp()
+            # Homodimer breaking kinetic
+            if binding_system in ["homodimerbreakingkinetic", "homodimer breaking kinetic"]:
+                self.system = System_kinetic_homodimerbreaking__pp()
 
-            print(self.system)
-            print(type(self.system))
+            # 1:2 lagrange
+            if binding_system in ["1:2", "1:2lagrange", "1:2 lagrange"]:
+                self.system = System_lagrange_1_to_2__pl12()
+
+            # 1:3 lagrange
+            if binding_system in ["1:3", "1:3lagrange", "1:3 lagrange"]:
+                self.system = System_lagrange_1_to_3__pl123()
+
         else:
             if issubclass(binding_system, BindingSystem):
                 self.system = binding_system()

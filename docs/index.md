@@ -17,6 +17,7 @@ PyBindingCurve was developed using python 3.7.1 but should work with any Python 
 - Numpy (1.15.x)
 - lm_fit (1.0.0)
 - mpmath (1.1.0)
+- autograd (1.3)
 
 # Licence
 [MIT License](https://github.com/stevenshave/pybindingcurve/blob/master/LICENSE)

@@ -1,21 +1,19 @@
 from mpmath import mpf, sqrt, power, mp, fabs
 
 mp.dps = 100
-two_pow_1third = pow(2, 1.0 / 3.0)
 
-
-# 1:1 binding
-def system01_one_to_one__p_l_kd__pl(p, l, kdpl):
+# 1:1 binding - see https://stevenshave.github.io/pybindingcurve/simulate_1to1.html
+# Readout is PL
+def system01_analytical_one_to_one__pl(p, l, kdpl):
     p = mpf(p)
     l = mpf(l)
     kdpl = mpf(kdpl)
     return ((p + kdpl + l - sqrt(-4 * p * l + power(p + kdpl + l, 2))) / 2.0).real
 
 
-# competition
-
-
-def system02_competition__p_l_i_kdpl_kdpi__pl(p, l, i, kdpl, kdpi):
+# 1:1:1 competition - see https://stevenshave.github.io/pybindingcurve/simulate_competition.html
+# Readout is PL
+def system02_analytical_competition__pl(p, l, i, kdpl, kdpi):
     p = mpf(p)
     l = mpf(l)
     i = mpf(i)
@@ -757,17 +755,17 @@ def system02_competition__p_l_i_kdpl_kdpi__pl(p, l, i, kdpl, kdpi):
         ).real
 
 
-# Dimer formption
-def system03_homodimer_formation__p_kdpp__pp(p, kdpp):
+# Homodimer formation - see https://stevenshave.github.io/pybindingcurve/simulate_homodimerformation.html
+# Readout is PP
+def system03_analytical_homodimer_formation__pp(p, kdpp):
     p = mpf(p)
     kdpp = mpf(kdpp)
     return ((4 * p + kdpp - sqrt(kdpp) * sqrt(8 * p + kdpp)) / 8.0).real
 
 
-# Dimer breaking
-
-
-def system04_homodimer_breaking__p_l_kdpp_kdpl__pp(p, i, kdpp, kdpi):
+# Homodimer breaking - see https://stevenshave.github.io/pybindingcurve/simulate_homodimerbreaking.html
+# Readout is PP
+def system04_analytical_homodimer_breaking__pp(p, i, kdpp, kdpi):
     p = mpf(p)
     i = mpf(i)
     kdpp = mpf(kdpp)

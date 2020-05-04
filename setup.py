@@ -22,7 +22,8 @@ setuptools.setup(
         'numpy>=1.18.0',
         'matplotlib>=3.2.1',
         'lmfit>=1.0.0',
-        'mpmath>=1.1.0'
+        'mpmath>=1.1.0',
+        'autograd>=1.3',
         ],
     python_requires='>=3.6',
 )
