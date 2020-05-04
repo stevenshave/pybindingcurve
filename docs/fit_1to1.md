@@ -58,7 +58,7 @@ Indicating that the system’s KD is 24.72 +/- 3.8 µM.
 To visualise how well this fit describes the experimental data, we can use the returned system parameters to plot a curve over the scatter data already added to the pbc.BindingCurve object’s internal plot.  However, the returned system object currently looks like this:
 > {'p': array([  0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200.]), 'l': 10, 'ymin': 54.4, 'kdpl': 24.720148154934403, 'ymax': 1072.308288861583}
 
-Simulating and plotting such a system would produce a plot with only 11 points along the x-axis and would  not look correct.  We therefore increase the number of points present for protein concentration with the following command:
+Simulating and plotting such a system would produce a plot with only 11 points along the x-axis and would not look correct.  We therefore increase the number of points present for protein concentration with the following command:
 
 ```python
 fitted_system["p"] = np.linspace(0, np.max(xcoords))

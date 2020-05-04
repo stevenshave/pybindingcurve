@@ -213,15 +213,25 @@ With curves, scatterpoints and fits applied, we may display the plot.
 
 ## pbc.systems
 
-pbc.systems contains all default systems supplied with PBC. Systems may be passed as arguments to pbc.BindingCurve objects upon initialisation to define the underlying system governing simulation, queries, and fitting. Additionally, the following shortcut strings may be used as shortcuts:
+pbc.systems contains all default systems supplied with PBC, and exports them to the PBC namespace. Systems may be passed as arguments to pbc.BindingCurve objects upon initialisation to define the underlying system governing simulation, queries, and fitting. Additionally, the following shortcut strings may be used as shortcuts:
 |Shortcut string list|pbc.systems equivalent|
 |---|---|
-|simple, 1:1|System_analytical_one_to_one_pl|
-|simplekinetic, simple kinetic, 1:1kinetic, 1:1 kinetic|	System_kinetic_one_to_one_pl|
-|homodimerformation, homodimer formation|	System_analytical_homodimerformation_pp|
-|homodimerformationkinetic, homodimer formation kinetic|System_kinetic_homodimerformation|
-|competition, 1:1:1|System_analytical_competition_pl|
-|homodimerbreaking, homodimer breaking|System_kinetic_homodimerbreaking_pp|
+|simple, 1:1|System_analytical_one_to_one__pl|
+|simplelagrange, simple lagrange, 1:1lagrange, 1:1 lagrange|System_lagrange_one_to_one__pl|
+|simplekinetic, simple kinetic, 1:1kinetic, 1:1 kinetic|	System_kinetic_one_to_one__pl|
+|homodimerformation, homodimer formation|	System_analytical_homodimerformation__pp|
+|homodimerformationlagrange, homodimer formation lagrange|System_lagrange_homodimerformation__pp|
+|homodimerformationkinetic, homodimer formation kinetic|System_kinetic_homodimerformation__pp|
+|competition, 1:1:1|System_analytical_competition__pl|
+|competition lagrange, competitionlagrange|System_lagrange_competition__pl|
+|homodimerbreaking, homodimer breaking, homodimerbreakinglagrange, homodimer breaking lagrange|System_lagrange_homodimerbreaking__pp|
+|homodimerbreakingkinetic, homodimer breaking kinetic|System_kinetic_homodimerbreaking__pp|
+|homodimerbreakinganalytical, homodimer breaking analytical|System_analytical_homodimerbreaking__pp|
+|1:2, 1:2 lagrange| System_lagrange_1_to_2__pl12|
+|1:3, 1:3 lagrange| System_lagrange_1_to_3__pl123|
+|1:4, 1:4 lagrange| System_lagrange_1_to_4__pl1234|
+|1:5, 1:5 lagrange| System_lagrange_1_to_5__pl12345|
+
 
 ## pbc.BindingSystem
 Custom binding systems may be defined through inheritance from the base class pbc.BindingSystem.  This provides basic functionality through a standard interface to PBC, allowing simulation, querying and fitting.  It expects the child class to provide a constructor which passes a function for querying the system and a query method.  An example pbc.BindingSystem for 1:1 binding solved analytically is defined as follows:
@@ -249,7 +259,7 @@ class System_analytical_one_to_one_pl(BindingSystem):
         else:
             return super().query(parameters) 
 ```
-Here, we see the parent class constructor called upon initialisation of the object with two arguments, the first is a python function which calculates the complex concentration present in a 1:1 binding system, which itself takes the appropriate parameters to calculate this.  In addition, a flag is set to define when the solution is solved analytically, or kinetically with ODEs.  The query method examines the content of the system, and deals with the presence of ymin and ymax to denote a signal is being simulated.  Query should ultimately end up calling query on the parent class, which has been set to return the result of the previously assigned function in the constructor.
+Here, we see the parent class constructor called upon initialisation of the object with two arguments, the first is a python function which calculates the complex concentration present in a 1:1 binding system, which itself takes the appropriate parameters to calculate this.  In addition, a flag is set to define when the solution is solved analytically.  The query method examines the content of the system and deals with the presence of ymin and ymax to denote a signal is being simulated.  Query should ultimately end up calling query on the parent class, which has been set to return the result of the previously assigned function in the constructor.
 
 ## pbc.Readout
 The pbc.Readout class contains three static methods, not requiring object initialisation for use. These methods all take in a system parameters dictionary describing the system, and the y_values resulting from system query calls (either through simulation of querying for singular values). These readout functions offer a convenient way to transform results. For example, the readout function to transform complex concentration into fraction ligand bound is defined as follows:
