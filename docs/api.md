@@ -214,6 +214,7 @@ With curves, scatterpoints and fits applied, we may display the plot.
 ## pbc.systems
 
 pbc.systems contains all default systems supplied with PBC, and exports them to the PBC namespace. Systems may be passed as arguments to pbc.BindingCurve objects upon initialisation to define the underlying system governing simulation, queries, and fitting. Additionally, the following shortcut strings may be used as shortcuts:
+
 |Shortcut string list|pbc.systems equivalent|
 |---|---|
 |simple, 1:1|System_analytical_one_to_one__pl|
