@@ -9,19 +9,19 @@ import sys
 # concentrations bellow.
 
 # Experimental data
-xcoords = np.array([0.0, 16.7, 33.3, 50.0, 66.7, 83.3, 100.0])
-ycoords = np.array([0.0, 0.004, 0.021, 0.094, 0.312, 1.188, 3.854])
+xcoords = np.array([0., 10., 20.0, 30., 40., 50., 60.])
+ycoords = np.array([0,.00680125560,0.935183266,3.49,6.9, 10.7, 14.7])
 
 # Construct the PyBindingCurve object, operating on a homodimer breaking system and add experimental data to the plot
-my_system = pbc.BindingCurve("homodimerbreaking")
+my_system = pbc.BindingCurve("homodimer breaking")
 my_system.add_scatter(xcoords, ycoords)
 
 # Known system parameters, kdpl will be added to this by fitting
-system_parameters = {"p": xcoords, "i": 100, "kdpp": 10}
+system_parameters = {"p": xcoords, "i": 20, "kdpp": 10}
 
 # Now we call fit, passing the known parameters, followed by a dict of parameters to be fitted along
 # with an initial guess, pass the ycoords, and what the readout (ycoords) is
-fitted_system, fit_accuracy = my_system.fit(system_parameters, {"kdpi": 0}, ycoords)
+fitted_system, fit_accuracy = my_system.fit(system_parameters, {"kdpi": 1}, ycoords)
 
 # Print out the fitted parameters
 for k, v in fit_accuracy.items():
