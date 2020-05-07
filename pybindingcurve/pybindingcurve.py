@@ -11,7 +11,6 @@ TODO:
 import numpy as np
 import matplotlib.pyplot as plt
 import lmfit
-from enum import Enum, auto
 from pybindingcurve.systems import *
 
 pbc_plot_style = {
