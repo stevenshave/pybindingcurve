@@ -230,11 +230,20 @@ class LagrangeBindingSystemFactory():
         reaction_strings = [item.strip() for sublist in [r.split(
             "\n") for r in system_string.split("#")[0].split(",")] for item in sublist if len(item.strip()) > 0]
         reaction_tuples = [(s[0], s[1].split("<->")[0], s[1].split("<->")[1])
-                           for s in [r.replace("*", "").split("+") for r in reaction_strings]]
+                           for s in [r.split("+") for r in reaction_strings]]
 
         # Find the readout
-        self.default_readout = [species.replace(
-            "*", "") for reaction in reaction_tuples for species in reaction if species.find("*") > -1]
+        for i,v in enumerate(reaction_tuples):
+            print(v)
+            if v[0].find("*")>-1:
+                self.default_readout=v[0].replace("*","")
+                reaction_tuples[i]=(v[0].replace("*",""),v[1], v[2])
+            if v[1].find("*")>-1:
+                self.default_readout=v[1].replace("*","")
+                reaction_tuples[i]=(v[0],v[1].replace("*",""), v[2])
+            if v[2].find("*")>-1:
+                self.default_readout=v[2].replace("*","")
+                reaction_tuples[i]=(v[0],v[1],v[2].replace("*",""))
         if not self.default_readout:
             self.default_readout = reaction_tuples[0][2]
 
@@ -251,7 +260,5 @@ if __name__ == "__main__":
         PPL2+L<->PPL1L2
 """
     new_lagrange = LagrangeBindingSystemFactory(custom_system)
-    new_lagrange.write_func_to_python_file("tmp.py")
     print(f"{new_lagrange.custom_function_arguments}")
     print(new_lagrange.binding_function(10,10,55,10,10,10,10,10))
-    new_lagrange.write_func_to_python_file("tmp_example_output.py")
