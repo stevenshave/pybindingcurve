@@ -246,6 +246,9 @@ class BindingCurve:
             string shortcut, such as '1:1' or 'competition', etc.
         """
         if isinstance(binding_system, str):
+            if binding_system.find("<->")!=-1:
+                self.system=System_lagrange_custom(binding_system)
+            
             binding_system = binding_system.lower()
             # 1:1
             if binding_system in ["simple", "1:1"]:

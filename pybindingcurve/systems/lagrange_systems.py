@@ -1,6 +1,7 @@
 from scipy.optimize import fsolve
 from autograd import grad
 from .binding_system import BindingSystem
+from .lagrange_binding_system_factory import LagrangeBindingSystemFactory
 import numpy as np
 
 # 1:1 binding - see https://stevenshave.github.io/pybindingcurve/simulate_1to1.html
@@ -266,6 +267,32 @@ class System_lagrange_1_to_3__pl123(BindingSystem):
     def __init__(self):
         super().__init__(system13_lagrange, False)
         self.default_readout = "pl123"
+
+    def query(self, parameters: dict):
+        if self._are_ymin_ymax_present(parameters):
+            parameters_no_min_max = self._remove_ymin_ymax_keys_from_dict_return_new(
+                parameters
+            )
+            value = super().query(parameters_no_min_max)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                return np.nan_to_num(
+                    parameters["ymin"]
+                    + ((parameters["ymax"] - parameters["ymin"]) * value)
+                    / parameters["l"]
+                )
+        else:
+            return super().query(parameters)
+
+class System_lagrange_custom(BindingSystem):
+    """
+    Lagrange custom binding system
+
+    Class uses LagrangeBindingSystemFactory to make a custom lagrange function.
+    """
+    def __init__(self, system_string):
+        custom_system=LagrangeBindingSystemFactory(system_string)
+        super().__init__(custom_system.binding_function)
+        self.default_readout = custom_system.default_readout
 
     def query(self, parameters: dict):
         if self._are_ymin_ymax_present(parameters):

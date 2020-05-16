@@ -13,7 +13,7 @@ import pybindingcurve as pbc
 system_parameters = {'p': 1, 'l': 10, 'kdpl': 1}
 
 # Make a pbc BindingCurve defined by the simple 1:1 binding system
-my_system = pbc.BindingCurve("1:1kinetic")
+my_system = pbc.BindingCurve("1:1")
 print("Simulating 1:1 binding system with these parameters:")
 print(system_parameters)
 print("pl=", my_system.query(system_parameters))
