@@ -6,7 +6,8 @@ system_results.csv
 __pycache__/
 *.py[cod]
 *$py.class
-
+**/tmp.py
+**/tmp_example_output.py
 # C extensions
 *.so
 

@@ -164,8 +164,9 @@ class BindingCurve:
     ----------
     binding_system : BindingSystem or str
         Define the binding system which will govern this BindingCurve object.
-        Caan either be a BindingSystem object or a human readable string
-        shortcut, such as '1:1' or 'competition', etc.
+        Can either be a BindingSystem object, a shortcut string describing a
+        system (such as '1:1' or 'competition', etc), or a custom binding
+        system definition string.
     """
     system = None
     _last_custom_readout = None

@@ -53,14 +53,15 @@ There are three main modes of operation within PyBindingCurve; 1) Visualisation 
 ## pbc.BindingCurve
 The BindingCurve object allows the user to work with a specific system, supplying tools for simulation and visualisation (plotting), querying of single point values, and fitting of experimental parameters to observation data.
 ### Initialisation
-When initialising this main class of PBC, we may supply either a pbc.BindingSystem, or a human readable shortcut string such as “1:1”, “competition”, “homodimer formation”, etc. For a full list of systems and shortcuts, please refer to the ‘pbc.systems and shortcut strings’ section.
+When initialising this main class of PBC, we may supply either a pbc.BindingSystem, a human readable shortcut string such as “1:1”, “competition”, “homodimer formation”, etc, or a system definition string. For a full list of systems, shortcuts, and custom systems definition strings, please refer to the ‘pbc.systems and shortcut strings’ section.
+
 Initialisation of a BindingCurve object takes the following arguments:
     
-    """
+       """
     BindingCurve class, used to simulate systems
 
     BindingCurve objects are governed by their underlying system, defining the
-    (usually) protein-ligand binding system being represented.  It also
+    (usually) protein-ligand binding system being represented. It also
     provides the main interface for simulation, visualisation, querying and
     the fitting of system parameters.
 
@@ -68,10 +69,12 @@ Initialisation of a BindingCurve object takes the following arguments:
     ----------
     binding_system : BindingSystem or str
         Define the binding system which will govern this BindingCurve object.
-        Caan either be a BindingSystem object or a human readable string
-        shortcut, such as '1:1' or 'competition', etc.
+        Can either be a BindingSystem object, a shortcut string describing a
+        system (such as '1:1' or 'competition', etc), or a custom binding
+        system definition string.
+    
+	"""
 
-    """
 
 Once intitialised with a pbc.BindingSystem, we may perform the following utilising its member functions.
 ### add_curve
@@ -232,6 +235,20 @@ pbc.systems contains all default systems supplied with PBC, and exports them to 
 |1:3, 1:3 lagrange| System_lagrange_1_to_3__pl123|
 |1:4, 1:4 lagrange| System_lagrange_1_to_4__pl1234|
 |1:5, 1:5 lagrange| System_lagrange_1_to_5__pl12345|
+
+Custom systems can be passed allowing the use of custom binding systems derived from a simple syntax.  This is in the form of a string with reactions separated either on newlines, commas, or a combination of the two.  Reactions take the form:
+
+- r1+r2<->p
+
+Denoting reactant 1 + reactant2 form p.  PBC will generate andsolve custom lagrangian systems. Readouts are signified by inclusion of a star (*) on a species.  If no star is found, then the first seen product is used. Some system examples follow:
+
+- "P+L<->PL" - standard protein-ligand binding
+- "P+L<->PL, P+I<->PI" - competition binding
+- "P+P<->PP" - dimer formation
+- "monomer+monomer<->dimer" - dimer formation
+- "P+L<->PL1, P+L<->PL2, PL1+L<->PL1L2, PL2+L<->PL1L2" - 1:2 site binding
+
+KDs passed to custom systems use underscores to separate species. P+L<->PL would require the KD passed as kd_p_l. Running with incomplete system parameters will prompt for the correct ones.
 
 
 ## pbc.BindingSystem
