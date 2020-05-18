@@ -1,6 +1,6 @@
 # PyBindingCurve
 
-PyBindingCurve is a Python package for simulation, plotting and fitting of experimental parameters to protein-ligand binding systems at equilibrium.  In simple terms, the most basic functionality allows simulation of a two species binding to each other as a function of their concentrations and the dissociation constant (K<sub>D</sub>) between the two species.
+PyBindingCurve is a Python package for simulation, plotting and fitting of experimental parameters to protein-ligand binding systems at equilibrium.  In simple terms, the most basic functionality allows simulation of a two species binding to each other as a function of their concentrations and the dissociation constant (K<sub>D</sub>) between the two species.  A number of systems are built in and can be solved using direct analytical, kinetic, or Langrange multiplier based techniques.  User-defined custom systems can also be specified using a simple syntax.
 
 ![PyBindingCurve simulation](https://raw.githubusercontent.com/stevenshave/pybindingcurve/master/pybindingcurve_logo.png "Breaking a dimer")
 
