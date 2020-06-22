@@ -37,30 +37,3 @@ my_system.add_curve(system_parameters)
 # Show the plot
 my_system.show_plot()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# custom_system="""
-# my_crazy_system
-# P+L<->PL
-# P+P<->PP
-# PP+I<->PPI
-# PPI+L<->PPIL
-
-# """
-
-# system_parameters = {'p0': np.linspace(0,5, num=100),  'kd_p_l':1, 'l0':0.5, 'kd_p_p':2, 'i0':4., 'kd_p_p':1.2, 'kd_p_l':4.3, 'kd_pp_i':1.2, 'kd_ppi_l':0.2}
-
-# my_system = pbc.BindingCurve(custom_system)
-# my_system.add_curve(system_parameters)
-# my_system.show_plot()

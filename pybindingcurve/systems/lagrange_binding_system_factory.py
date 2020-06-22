@@ -26,7 +26,7 @@ class LagrangeBindingSystemFactory():
     func_string=None
     _add_nonzero_constraints=False
     
-    def __init__(self, system_string, add_nonzero_constraints=False):
+    def __init__(self, system_string, add_nonzero_constraints=False, output_filename=None):
         
         # Adding non-zero constraints used in testing and development
         self._add_nonzero_constraints=add_nonzero_constraints
@@ -60,6 +60,8 @@ class LagrangeBindingSystemFactory():
                     self.fundamental_species_in_products[fundamental_species][product]+=count
 
         self.func_string=self.get_func_string()
+        if output_filename is not None:
+            self.write_func_to_python_file(output_filename)
         exec(self.func_string, globals())
         self.binding_function=eval("custom_lagrange_binding_system")
         self.custom_function_arguments=list(signature(self.binding_function).parameters.keys())
