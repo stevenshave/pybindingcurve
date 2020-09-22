@@ -391,7 +391,7 @@ class BindingCurve:
             self._max_y_axis = np.nanmax(
                 [self._max_y_axis, np.nanmax(curve.ycoords)])
 
-    def add_scatter(self, xcoords, ycoords):
+    def add_scatter(self, xcoords, ycoords, name: str = None):
         """
         Add scatterpoints to a plot, useful to represent real measurement data
 
@@ -405,9 +405,13 @@ class BindingCurve:
             x-coordinates
         ycoords : list or array-like
             y-coordinates
+        name : str or None, optional
+            Name of series to appear in plot legends
         """
         self._initialize_plot()
-        self.axes.scatter(xcoords, ycoords)
+        if name is None:
+                name = f"Data {self._num_added_traces}"
+        self.axes.scatter(xcoords, ycoords, label=name)
         if isinstance(xcoords, np.ndarray) and isinstance(ycoords, np.ndarray):
             self._min_y_axis = min(self._min_y_axis, min(np.real(ycoords)))
             self._max_y_axis = max(self._max_y_axis, max(np.real(ycoords)))
@@ -601,6 +605,7 @@ class BindingCurve:
             )
             print("Missing variables are: ", missing)
             return None
+        
         # Add parameters for lmfit, accounting for bounds
         if bounds is None:
             bounds = {}
