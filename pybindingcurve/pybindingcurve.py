@@ -608,6 +608,8 @@ class BindingCurve:
         for varname in to_fit.keys():
             bnd_min = -np.inf
             bnd_max = np.inf
+            if varname.startswith("kd"):
+                bnd_min=0
             if varname in bounds.keys():
                 bnd_min = bounds[varname][0]
                 bnd_max = bounds[varname][1]
