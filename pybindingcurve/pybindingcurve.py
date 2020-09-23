@@ -412,9 +412,10 @@ class BindingCurve:
         if name is None:
                 name = f"Data {self._num_added_traces}"
         self.axes.scatter(xcoords, ycoords, label=name)
-        if isinstance(xcoords, np.ndarray) and isinstance(ycoords, np.ndarray):
-            self._min_y_axis = min(self._min_y_axis, min(np.real(ycoords)))
-            self._max_y_axis = max(self._max_y_axis, max(np.real(ycoords)))
+        self._min_x_axis = min(self._min_x_axis, np.min(np.real(xcoords)))
+        self._max_x_axis = max(self._max_x_axis, np.max(np.real(xcoords)))
+        self._min_y_axis = min(self._min_y_axis, np.min(np.real(ycoords)))
+        self._max_y_axis = max(self._max_y_axis, np.max(np.real(ycoords)))
 
     def show_plot(
         self,
