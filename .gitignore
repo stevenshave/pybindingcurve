@@ -1,4 +1,7 @@
-# Custom to pybindingcurvek
+# Custom to pybindingcurve
+tmp*.py
+tmp*.npz
+dat*.npz
 heatmap*.pkl
 .vscode
 system_results.csv
