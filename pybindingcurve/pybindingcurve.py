@@ -408,14 +408,19 @@ class BindingCurve:
         name : str or None, optional
             Name of series to appear in plot legends
         """
+        # self._initialize_plot()
+        # if name is None:
+        #         name = f"Data {self._num_added_traces}"
+        # self.axes.scatter(xcoords, ycoords, label=name)
+        # self._min_x_axis = min(self._min_x_axis, np.min(np.real(xcoords)))
+        # self._max_x_axis = max(self._max_x_axis, np.max(np.real(xcoords)))
+        # self._min_y_axis = min(self._min_y_axis, np.min(np.real(ycoords)))
+        # self._max_y_axis = max(self._max_y_axis, np.max(np.real(ycoords)))
         self._initialize_plot()
-        if name is None:
-                name = f"Data {self._num_added_traces}"
-        self.axes.scatter(xcoords, ycoords, label=name)
-        self._min_x_axis = min(self._min_x_axis, np.min(np.real(xcoords)))
-        self._max_x_axis = max(self._max_x_axis, np.max(np.real(xcoords)))
-        self._min_y_axis = min(self._min_y_axis, np.min(np.real(ycoords)))
-        self._max_y_axis = max(self._max_y_axis, np.max(np.real(ycoords)))
+        self.axes.scatter(xcoords, ycoords)
+        if isinstance(xcoords, np.ndarray) and isinstance(ycoords, np.ndarray):
+            self._min_y_axis = min(self._min_y_axis, min(np.real(ycoords)))
+            self._max_y_axis = max(self._max_y_axis, max(np.real(ycoords)))
 
     def show_plot(
         self,
@@ -614,8 +619,6 @@ class BindingCurve:
         for varname in to_fit.keys():
             bnd_min = -np.inf
             bnd_max = np.inf
-            if varname.startswith("kd"):
-                bnd_min=0.0
             if varname in bounds.keys():
                 bnd_min = bounds[varname][0]
                 bnd_max = bounds[varname][1]
