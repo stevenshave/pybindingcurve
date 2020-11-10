@@ -617,6 +617,12 @@ class BindingCurve:
             bounds = {}
         params = lmfit.Parameters()
         for varname in to_fit.keys():
+            # Do not be tempted to set bnd_min to 0 to help the minimizer as
+            # lmfit (at least of version 1.0.1) then fails to work... no 
+            # explanation as to why is present, in lmfit documentation,
+            # only that little advantage is gained by narrowing bounds and 
+            # even outlandishly wide bounds has little effect.
+            # See https://lmfit.github.io/lmfit-py/bounds.html
             bnd_min = -np.inf
             bnd_max = np.inf
             if varname in bounds.keys():
