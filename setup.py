@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pybindingcurve",
-    version="1.0.3",
+    version="1.0.4",
     author="Steven Shave",
     author_email="steve.nshave@gmail.com",
     description="Protein ligand binding simulation in Python",
