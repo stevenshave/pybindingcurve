@@ -4,6 +4,8 @@ PyBindingCurve is a Python package for simulation, plotting and fitting of exper
 
     *There is a bug in Numpy 1.19.4 when running the latest Windows 10 update - see https://tinyurl.com/y3dm3h86, and https://github.com/numpy/numpy/issues/16744). To workaround on Windows 10, use conda/miniconda, or downgrade to Numpy 1.19.3 with:*
     > pip install numpy==1.19.4
+    
+    The pypi/pip package will automatically exclude numpy 1.19.4 so pip install pybindingcurve is safe.
 
 
 
