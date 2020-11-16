@@ -181,6 +181,7 @@ class BindingCurve:
     _min_y_axis = 0.0
     _max_y_axis = 0.0
     _num_added_traces = 0
+    _num_added_sets_of_points = 0
     _last_known_changing_parameter = "X"
 
     def query(self, parameters, readout: Readout = None):
@@ -313,7 +314,23 @@ class BindingCurve:
         Control setups needed for plotting a binding plot including layouts 
         of subplots, grid lines, and y-axis view limits, etc.   
         """
+        
         if self.fig is None:
+            
+            # Here we reset a lot as the user may be making multiple
+            # plots one after the other
+            self._last_custom_readout = None
+            self.curves = []
+            self.axes = None
+            
+            self._min_x_axis = 0.0
+            self._max_x_axis = 0.0
+            self._min_y_axis = 0.0
+            self._max_y_axis = 0.0
+            self._num_added_traces = 0
+            self._num_added_sets_of_points = 0
+            self._last_known_changing_parameter = "X"
+
             self.fig, self.axes = plt.subplots(
                 nrows=1, ncols=1, figsize=pbc_plot_style["fig_size"]
             )
@@ -354,15 +371,18 @@ class BindingCurve:
         if readout is not None:
             self._last_custom_readout, y_values = readout(parameters, y_values)
 
-        if y_values.ndim > 1:
+        # It may be that we have multiple solutions from a direct analytical
+        # solution.  If so, then we need to add all curves.
+        if y_values.ndim > 1: # Multiple solutions
             for i in range(y_values.ndim):
                 self.curves.append(
                     _Curve(parameters[changing_parameters[0]], y_values[i])
                 )
         else:
-            self.curves.append(
+            self.curves.append( # Only one solution
                 _Curve(parameters[changing_parameters[0]], y_values))
         self._last_known_changing_parameter = changing_parameters[0]
+        
         for curve_it, curve in enumerate(self.curves[self._num_added_traces:]):
             self._num_added_traces += 1
             curve_name_with_number = None
@@ -374,7 +394,7 @@ class BindingCurve:
                 else:
                     curve_name_with_number = name + " " + str(curve_it + 1)
             self.axes.plot(
-                parameters[changing_parameters[0]],
+                curve.xcoords,
                 curve.ycoords,
                 self.plot_solution_colours[self._num_added_traces] + "-",
                 label=curve_name_with_number,
@@ -408,19 +428,16 @@ class BindingCurve:
         name : str or None, optional
             Name of series to appear in plot legends
         """
-        # self._initialize_plot()
-        # if name is None:
-        #         name = f"Data {self._num_added_traces}"
-        # self.axes.scatter(xcoords, ycoords, label=name)
-        # self._min_x_axis = min(self._min_x_axis, np.min(np.real(xcoords)))
-        # self._max_x_axis = max(self._max_x_axis, np.max(np.real(xcoords)))
-        # self._min_y_axis = min(self._min_y_axis, np.min(np.real(ycoords)))
-        # self._max_y_axis = max(self._max_y_axis, np.max(np.real(ycoords)))
         self._initialize_plot()
-        self.axes.scatter(xcoords, ycoords)
-        if isinstance(xcoords, np.ndarray) and isinstance(ycoords, np.ndarray):
-            self._min_y_axis = min(self._min_y_axis, min(np.real(ycoords)))
-            self._max_y_axis = max(self._max_y_axis, max(np.real(ycoords)))
+        self._num_added_sets_of_points+=1
+        if name is None:
+                name = f"Data "+str(self._num_added_sets_of_points)
+        self.axes.scatter(xcoords, ycoords, label=name)
+        self._min_x_axis = min(self._min_x_axis, np.min(np.real(xcoords)))
+        self._max_x_axis = max(self._max_x_axis, np.max(np.real(xcoords)))
+        self._min_y_axis = min(self._min_y_axis, np.min(np.real(ycoords)))
+        self._max_y_axis = max(self._max_y_axis, np.max(np.real(ycoords)))
+     
 
     def show_plot(
         self,
@@ -471,7 +488,8 @@ class BindingCurve:
         svg_filename : str
             File name/location where svg will be written
         """
-
+        assert self.fig is not None, "Nothing to plot"
+        
         if min_x is not None:
             self._min_x_axis = min_x
         if max_x is not None:
@@ -554,6 +572,12 @@ class BindingCurve:
             plt.savefig(svg_filename, metadata={
                         "Title": "pyBindingCurve plot"})
         plt.show()
+        # Calling show displays, and then consumes the figure, so we should
+        # set it to Null so that the next initialisation sets up a new figure.
+        self.fig=None
+        plt.clf()
+        plt.cla()
+        plt.close()
 
     def fit(
         self,
