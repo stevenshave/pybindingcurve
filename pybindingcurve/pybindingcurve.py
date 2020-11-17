@@ -1,8 +1,8 @@
 """PyBindingCurve - a package to simulate protein-ligand binding systems
 
 TODO:
-* Add curve tracing to analytical systems
 * Check combinations of readout with/without ymin/ymax
+* Check that ymin-only being present is handled properly.
 
 
 """
@@ -207,6 +207,8 @@ class BindingCurve:
             Response/signal of the system
         """
 
+        # Compound return statement, return the query, otherwide apply the
+        # readout object to it and return the second returned variable
         return self.system.query(parameters) if readout is None else readout(parameters, self.system.query(parameters))[1]
 
     def _find_changing_parameters(self, params: dict):
@@ -618,6 +620,9 @@ class BindingCurve:
             Tuple containing a dictionary of best fit systems parameters,
             then a dictionary containing the accuracy for fitted variables.
         """
+        
+        # Make a copy of system parameters and operate on the copy, so that
+        # the original remains untouched.
         system_parameters_copy = dict(system_parameters)
         # Check we have parameters to fit, and nothing is missing
         if len(to_fit.keys()) == 0:
@@ -661,10 +666,13 @@ class BindingCurve:
         )
         result = lmmini.minimize()
 
+        # Check that any fitted KDs are not negative
         for k in system_parameters_copy.keys():
-            if isinstance(system_parameters_copy[k], lmfit.parameter.Parameter):
-                system_parameters_copy[k] = system_parameters_copy[k].value
+            if k.startswith("kd"):
+                assert system_parameters_copy[k]>0, f"Error, Fitted KD is negative ({system_parameters_copy[k]}), unable to fit"
 
+        # Return 2 things, first the newly fitted system dictionary, and then
+        # a dictionary of absolute fit errors.
         return (
             system_parameters_copy,
             dict((p, result.params[p].stderr) for p in result.params),
