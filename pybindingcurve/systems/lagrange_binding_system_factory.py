@@ -236,7 +236,6 @@ class LagrangeBindingSystemFactory():
 
         # Find the readout
         for i,v in enumerate(reaction_tuples):
-            print(v)
             if v[0].find("*")>-1:
                 self.default_readout=v[0].replace("*","")
                 reaction_tuples[i]=(v[0].replace("*",""),v[1], v[2])
