@@ -250,6 +250,7 @@ class BindingCurve:
             string shortcut, such as '1:1' or 'competition', etc.
         """
         if isinstance(binding_system, str):
+            # Check if its a custom defined system - containing <->
             if binding_system.find("<->")!=-1:
                 self.system=System_lagrange_custom(binding_system)
             
@@ -303,11 +304,7 @@ class BindingCurve:
         else:
             if issubclass(binding_system, BindingSystem):
                 self.system = binding_system()
-        if self.system == None:
-            print(
-                "Invalid system specified, try one of: ['simple', 'homodimer', 'competition', 'homdimer breaking'], or pass a system object"
-            )
-            return None
+        assert self.system is not None, "Invalid system specified, try one of: ['simple', 'homodimer', 'competition', 'homdimer breaking'], pass a system object, or define a custom binding system"
 
     def _initialize_plot(self):
         """
