@@ -16,7 +16,7 @@ my_system.add_curve(
 )
 # Add curve with inhibitor (i)
 my_system.add_curve(
-    {"p": np.linspace(0, 100), "l": 10, "i": 10, "kdpi": 100, "kdpl": 10}, "[i] = 10 µM"
+    {"p": np.linspace(0, 100), "l": 10, "i": 10, "kdpi": 1, "kdpl": 10}, "[i] = 10 µM"
 )
 # Add curve with more inhibtor (i)
 my_system.add_curve(
