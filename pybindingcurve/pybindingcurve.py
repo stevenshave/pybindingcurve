@@ -303,7 +303,7 @@ class BindingCurve:
         else:
             if issubclass(binding_system, BindingSystem):
                 self.system = binding_system()
-        assert self.system is not None, "Invalid system specified, try one of: ['simple', 'homodimer', 'competition', 'homdimer breaking'], pass a system object, or define a custom binding system"
+        assert self.system is not None, "Invalid system specified, try one of: ['simple', 'homodimer formation', 'competition', 'homdimer breaking'], pass a system object, or define a custom binding system"
 
     def _initialize_plot(self):
         """
