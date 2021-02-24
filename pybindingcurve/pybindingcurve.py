@@ -2,7 +2,6 @@
 
 TODO:
 * Check combinations of readout with/without ymin/ymax
-* Check that ymin-only being present is handled properly.
 
 
 """
@@ -206,7 +205,7 @@ class BindingCurve:
         Single floating point, or array-like
             Response/signal of the system
         """
-
+        
         # Compound return statement, return the query, otherwide apply the
         # readout object to it and return the second returned variable
         return self.system.query(parameters) if readout is None else readout(parameters, self.system.query(parameters))[1]
@@ -638,6 +637,17 @@ class BindingCurve:
             print("Missing variables are: ", missing)
             return None
         
+        # Often, people forget to set the readout, or include ymin as a system
+        # parameter which indicates we are dealing with fitting signal data.
+        # Check if the changing parameter exceeds the matching ycoord at any
+        # point. If so, warn.
+
+        changing_parameter=self._find_changing_parameters(system_parameters)
+        assert changing_parameter is not None, "Nothing changes in the data in order to fit... cannot fit."
+        if any((system_parameters[changing_parameter[0]]-ycoords)<0):
+            if 'ymin' not in system_parameters.keys() and 'ymax' not in system_parameters.keys():
+                print("Warning: Some x-values are greater than y-values, implying you forgot to include a ymin or ymax to indicate your ycoords are signal, not concentrations, please provide a ymin in the fit parameters to indicate it is a signal")
+
         # Add parameters for lmfit, accounting for bounds
         if bounds is None:
             bounds = {}
