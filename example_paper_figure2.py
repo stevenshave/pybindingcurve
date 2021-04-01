@@ -1,10 +1,12 @@
-"""Simulation example homo vs heterodimer breaking heatmaps
+"""Generate paper figure 2
 
-Generate publication figure #2 heatmaps showing homo- vs hetero-dimer
-breaking. Figure in BioRxiv preprint #1 contained was generated using
-numerically unstable code - before the inclusion of MPMath for 
-arbitary precision arithmetic. This performs the long calculations
-to generate the pkl files which speeds up subsequent runs.
+Figure 2 in the PyBindingCurve paper consists of heatmaps showing
+homo- vs hetero-dimer breaking. The figure in BioRxiv preprint #1
+used numerically unstable code - before the inclusion of MPMath 
+for arbitary precision arithmetic which fixes artefacts present in
+the old figure. First the code performs the long calculations,
+storing results in pickles, before rendering. Subsequent runs
+finding the pickles speeds up display.
 """
 
 
