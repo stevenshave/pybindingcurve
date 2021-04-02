@@ -253,53 +253,69 @@ class BindingCurve:
             if binding_system.find("<->")!=-1:
                 self.system=System_lagrange_custom(binding_system)
             
-            binding_system = binding_system.lower()
+            binding_system = binding_system.lower().replace(" ","")
             # 1:1
             if binding_system in ["simple", "1:1"]:
                 self.system = System_analytical_one_to_one__pl()
             # 1:1 lagrange
-            if binding_system in ["simplelagrange", "simple lagrange", "1:1lagrange", "1:1 lagrange"]:
+            if binding_system in ["simplelagrange", "1:1lagrange"]:
                 self.system = System_lagrange_one_to_one__pl()
             # 1:1 kinetic
-            if binding_system in ["simplekinetic", "simple kinetic", "1:1kinetic", "1:1 kinetic"]:
+            if binding_system in ["simplekinetic", "1:1kinetic"]:
                 self.system = System_kinetic_one_to_one__pl()
+            # 1:1 minimised
+            if binding_system in ["simplemin", "simpleminimized", "simpleminimised", "1:1min", "1:1minimized", "1:1minimised"]:
+                self.system = System_minimizer_one_to_one__pl()
             
             # Homodimer formation
-            if binding_system in ["homodimerformation", "homodimer formation"]:
+            if binding_system in ["homodimerformation","homodimer"]:
                 self.system = System_analytical_homodimerformation__pp()
             # Homodimer formation lagrange
-            if binding_system in ["homodimerformationlagrange","homodimer formation lagrange"]:
+            if binding_system in ["homodimerformationlagrange","homodimerlagrange"]:
                 self.system = System_lagrange_homodimerformation__pp()
             # Homodimer formation kinetic
-            if binding_system in ["homodimerformationkinetic","homodimer formation kinetic"]:
+            if binding_system in ["homodimerformationkinetic","homodimerkinetic"]:
                 self.system = System_kinetic_homodimerformation__pp()
-            
+            # Homodimer formation minimizer
+            if binding_system in ["homodimerformationmin","homodimerformationminimiser","homodimerformationminimizer", "homodimermin","homodimerminimiser","homodimerminimizer",]:
+                self.system = System_minimizer_homodimerformation__pp()
+
             # Competition
             if binding_system in ["competition", "1:1:1"]:
                 self.system = System_analytical_competition__pl()
-            if binding_system in ["competition lagrange", "competitionlagrange"]:
+            if binding_system in ["competitionlagrange", "1:1:1lagrange"]:
                 self.system = System_lagrange_competition_pl()
-            if binding_system in ["competition kinetic", "competitionkinetic"]:
+            if binding_system in ["competitionkinetic", "1:1:1kinetic"]:
                 self.system = System_kinetic_competition_pl()
+            if binding_system in ["competitionmin","competitionminimiser","competitionminimizer","1:1:1min","1:1:1minimiser","1:1:1minimizer"]:
+                self.system = System_minimizer_competition__pl()
 
+            # Homodimer breaking minimizer
+            if binding_system in ["homodimerbreaking", "homodimerbreakingmin"]:
+                self.system = System_minimizer_homodimerbreaking__pp()
             # Homodimer breaking lagrange
-            if binding_system in ["homodimerbreaking", "homodimer breaking", "homodimerbreakinglagrange", "homodimer breaking lagrange"]:
+            if binding_system in ["homodimerbreakinglagrange"]:
                 self.system = System_lagrange_homodimerbreaking__pp()
             # Homodimer breaking analytical
-            if binding_system in ["homodimerbreakinganalytical", "homodimer breaking analytical"]:
+            if binding_system in ["homodimerbreakinganalytical"]:
                 self.system = System_analytical_homodimerbreaking_pp()
             # Homodimer breaking kinetic
-            if binding_system in ["homodimerbreakingkinetic", "homodimer breaking kinetic"]:
+            if binding_system in ["homodimerbreakingkinetic"]:
                 self.system = System_kinetic_homodimerbreaking__pp()
 
+            # 1:2 minimizer
+            if binding_system in ["1:2", "1:2min", "1:2minimiser", "1:2minimizer"]:
+                self.system = System_minimizer_1_to_2__pl12()
             # 1:2 lagrange
-            if binding_system in ["1:2", "1:2lagrange", "1:2 lagrange"]:
+            if binding_system in ["1:2lagrange"]:
                 self.system = System_lagrange_1_to_2__pl12()
 
+            # 1:3 minimizer
+            if binding_system in ["1:3", "1:3min", "1:3minimiser", "1:3minimizer"]:
+                self.system = System_minimizer_1_to_3__pl123()
             # 1:3 lagrange
-            if binding_system in ["1:3", "1:3lagrange", "1:3 lagrange"]:
+            if binding_system in ["1:3lagrange"]:
                 self.system = System_lagrange_1_to_3__pl123()
-
         else:
             if issubclass(binding_system, BindingSystem):
                 self.system = binding_system()
