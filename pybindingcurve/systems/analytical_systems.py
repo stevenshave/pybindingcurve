@@ -98,7 +98,7 @@ class System_analytical_homodimerbreaking_pp(BindingSystem):
     """
     def __init__(self):
         super().__init__(
-            system04_homodimer_breaking__pp,
+            system04_analytical_homodimer_breaking__pp,
             analytical=True,
         )
         self.default_readout = "pp"
