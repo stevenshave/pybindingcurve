@@ -19,60 +19,101 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def get_2D_grid_values(xmin, xmax, ymin, ymax, system, parameters, x_parameter, y_parameter, filename, plot_steps, starting_y_guess=0):
-    file=Path(filename)
+def get_2D_grid_values(
+    xmin,
+    xmax,
+    ymin,
+    ymax,
+    system,
+    parameters,
+    x_parameter,
+    y_parameter,
+    filename,
+    plot_steps,
+    starting_y_guess=0,
+):
+    file = Path(filename)
     if file.exists():
-       mat=pickle.load(open(filename, 'rb'))
-       return mat
-    x_logconc=np.linspace(xmin, xmax, plot_steps)
-    y_logconc=np.linspace(ymin, ymax, plot_steps)
-    mat=np.ndarray((plot_steps, plot_steps))
+        mat = pickle.load(open(filename, "rb"))
+        return mat
+    x_logconc = np.linspace(xmin, xmax, plot_steps)
+    y_logconc = np.linspace(ymin, ymax, plot_steps)
+    mat = np.ndarray((plot_steps, plot_steps))
     for ix, x in enumerate(x_logconc):
         print("Working on :", x)
         for iy, y in enumerate(y_logconc):
-            parameters[x_parameter]=10**x
-            parameters[y_parameter]=10**y
-            mat[ix,iy]=system.query(parameters)
+            parameters[x_parameter] = 10 ** x
+            parameters[y_parameter] = 10 ** y
+            mat[ix, iy] = system.query(parameters)
 
     pickle.dump(mat, open(filename, "wb"))
     return mat
 
 
-def generate_heatmaps(homodimer_map_file:Path, heterodimer_map_file:Path, plot_steps:int=800):
+def generate_heatmaps(
+    homodimer_map_file: Path, heterodimer_map_file: Path, plot_steps: int = 800
+):
     pool = Pool(2)
-    inhibitor_conc=5.0
-    pbc_homodimer_breaking=pbc.BindingCurve("homodimer breaking")
-    pbc_heterodimer_breaking=pbc.BindingCurve("competition")
-    
-    
-    assert not homodimer_map_file.exists(), "Output file already exists" 
-    assert not heterodimer_map_file.exists(), "Output file already exists" 
-    j1=pool.apply_async(get_2D_grid_values, [-3, 3, -3, 3, pbc_homodimer_breaking, {'p':2, 'i':inhibitor_conc}, 'kdpp', 'kdpi', f"heatmaphomo-{str(inhibitor_conc)}.pkl", plot_steps])
-    j2=pool.apply_async(get_2D_grid_values, [-3, 3, -3, 3, pbc_heterodimer_breaking, {'p':1,'l':1, 'i':inhibitor_conc}, 'kdpl', 'kdpi', f"heatmaphetero-{str(inhibitor_conc)}.pkl", plot_steps])
-    res=j1.get()
-    res=j2.get()
+    inhibitor_conc = 5.0
+    pbc_homodimer_breaking = pbc.BindingCurve("homodimer breaking")
+    pbc_heterodimer_breaking = pbc.BindingCurve("competition")
 
-def load_heatmap(filepath:Path):
+    assert not homodimer_map_file.exists(), "Output file already exists"
+    assert not heterodimer_map_file.exists(), "Output file already exists"
+    j1 = pool.apply_async(
+        get_2D_grid_values,
+        [
+            -3,
+            3,
+            -3,
+            3,
+            pbc_homodimer_breaking,
+            {"p": 2, "i": inhibitor_conc},
+            "kdpp",
+            "kdpi",
+            f"heatmaphomo-{str(inhibitor_conc)}.pkl",
+            plot_steps,
+        ],
+    )
+    j2 = pool.apply_async(
+        get_2D_grid_values,
+        [
+            -3,
+            3,
+            -3,
+            3,
+            pbc_heterodimer_breaking,
+            {"p": 1, "l": 1, "i": inhibitor_conc},
+            "kdpl",
+            "kdpi",
+            f"heatmaphetero-{str(inhibitor_conc)}.pkl",
+            plot_steps,
+        ],
+    )
+    res = j1.get()
+    res = j2.get()
+
+
+def load_heatmap(filepath: Path):
     if filepath.exists():
         mat = pickle.load(open(filepath, "rb"))
-        print(filepath, "shape=",mat.shape)
+        print(filepath, "shape=", mat.shape)
         # Be careful with the size of the matrices plotted in the heatmap.
         # The previosuly generated 800x800 matrices result in a ~360 MB SVG
         # which crashes inkscape on a 16GB machine. Downsampling by a factor
-        # of 2 in each dimension produces a ~90 MB SVG which inkacape still 
+        # of 2 in each dimension produces a ~90 MB SVG which inkacape still
         # struggles with.
-        mat=mat[::4,::4] # To downsample, change ::1 to ::2 etc...
+        mat = mat[::4, ::4]  # To downsample, change ::1 to ::2 etc...
         return mat
     else:
         return None
 
-def make_plot(homodimer_map_file:Path, heterodimer_map_file:Path):
+
+def make_plot(homodimer_map_file: Path, heterodimer_map_file: Path):
     heatmap_homo = load_heatmap(homodimer_map_file)
     heatmap_hetero = load_heatmap(heterodimer_map_file)
 
-    fig, ax = plt.subplots(
-       ncols=3, figsize=(10, 4), sharey=True, sharex=True
-    )
+    fig, ax = plt.subplots(ncols=3, figsize=(10, 4), sharey=True, sharex=True)
 
     colour_map = sns.color_palette("RdBu_r", 256)
 
@@ -102,8 +143,7 @@ def make_plot(homodimer_map_file:Path, heterodimer_map_file:Path):
         cbar=True,
         cbar_kws=dict(pad=0.01),
     )
-    #ax[2].get_yaxis().set_visible(False)
-
+    # ax[2].get_yaxis().set_visible(False)
 
     x_labels = ["9 (nM)", "6 ($\mathrm{\mu}$M)", "3 (mM)"]
     x_labels.reverse()
@@ -147,15 +187,13 @@ def make_plot(homodimer_map_file:Path, heterodimer_map_file:Path):
 
 
 if __name__ == "__main__":
-    plot_steps=800
-    homodimer_map_file=Path(f"heatmaphomo-5.0.pkl")
-    heterodimer_map_file=Path(f"heatmaphetero-5.0.pkl")
-    #homodimer_map_file=Path(f"heatmaphomo-oldver.pkl")
-    #heterodimer_map_file=Path(f"heatmaphetero-oldver.pkl")
+    plot_steps = 800
+    homodimer_map_file = Path(f"heatmaphomo-5.0.pkl")
+    heterodimer_map_file = Path(f"heatmaphetero-5.0.pkl")
+    # homodimer_map_file=Path(f"heatmaphomo-oldver.pkl")
+    # heterodimer_map_file=Path(f"heatmaphetero-oldver.pkl")
     if not homodimer_map_file.exists() and not heterodimer_map_file.exists():
-        generate_heatmaps(homodimer_map_file, heterodimer_map_file, plot_steps=plot_steps)
+        generate_heatmaps(
+            homodimer_map_file, heterodimer_map_file, plot_steps=plot_steps
+        )
     make_plot(homodimer_map_file, heterodimer_map_file)
-    
-
-
-    

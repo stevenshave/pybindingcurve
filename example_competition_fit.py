@@ -17,11 +17,19 @@ my_system = pbc.BindingCurve("1:1:1")
 my_system.add_scatter(xcoords, ycoords)
 
 # Known system parameters, kdpl will be added to this by fitting
-system_parameters = {"p": xcoords, "l": 10, "i": 10, "kdpl": 10, 'ymin':np.min(ycoords)}
+system_parameters = {
+    "p": xcoords,
+    "l": 10,
+    "i": 10,
+    "kdpl": 10,
+    "ymin": np.min(ycoords),
+}
 
 # Now we call fit, passing the known parameters, followed by a dict of parameters to be fitted along
 # with an initial guess, pass the ycoords, and what the readout (ycoords) is
-fitted_system, fit_accuracy = my_system.fit(system_parameters, {"kdpi": 0, 'ymax':np.max(ycoords)}, ycoords)
+fitted_system, fit_accuracy = my_system.fit(
+    system_parameters, {"kdpi": 0, "ymax": np.max(ycoords)}, ycoords
+)
 
 # Print out the fitted parameters
 for k, v in fit_accuracy.items():

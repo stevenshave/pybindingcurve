@@ -46,6 +46,7 @@ def system02_kinetic(p, l, i, kdpl, kdpi, interval=(0, 100)):
         "pi": ode_result[4],
     }
 
+
 # Homodimer formation - see https://stevenshave.github.io/pybindingcurve/simulate_homodimerformation.html
 def system03_kinetic(p, kdpp, interval=(0, 100)):
     def ode(concs, t, kdpp):
@@ -87,6 +88,7 @@ def system04_kinetic(p, i, kdpp, kdpi, interval=(0, 100)):
         "pi": ode_result[3],
     }
 
+
 class System_kinetic_one_to_one__pl(BindingSystem):
     """
     Kinetic 1:1 binding system
@@ -94,6 +96,7 @@ class System_kinetic_one_to_one__pl(BindingSystem):
     Class defines 1:1 binding, readout is PL
     See https://stevenshave.github.io/pybindingcurve/simulate_1to1.html
     """
+
     def __init__(self):
         super().__init__(system01_kinetic)
         self.default_readout = "pl"
@@ -121,6 +124,7 @@ class System_kinetic_competition_pl(BindingSystem):
     Class defines 1:1:1 competition, readout is PL
     See https://stevenshave.github.io/pybindingcurve/simulate_competition.html
     """
+
     def __init__(self):
         super().__init__(system02_kinetic)
         self.default_readout = "pl"
@@ -176,6 +180,7 @@ class System_kinetic_homodimerbreaking__pp(BindingSystem):
     Class defines homodimer breaking, readout is PP
     See https://stevenshave.github.io/pybindingcurve/simulate_homodimerbreaking.html
     """
+
     def __init__(self):
         super().__init__(system04_kinetic, False)
         self.default_readout = "pp"
@@ -203,6 +208,7 @@ class System_kinetic_homodimerbreaking__pl(BindingSystem):
     Class defines homodimer breaking, readout is PL
     See https://stevenshave.github.io/pybindingcurve/simulate_homodimerbreaking.html
     """
+
     def __init__(self):
         super().__init__(system04_kinetic, False)
         self.default_readout = "pl"

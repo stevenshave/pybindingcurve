@@ -9,10 +9,10 @@ import sys
 # concentrations bellow.
 
 # Experimental data
-xcoords = np.array([0.0,2,4,6,8,10])
-ycoords = np.array([0., 0.22, 0.71, 1.24,1.88,2.48])
+xcoords = np.array([0.0, 2, 4, 6, 8, 10])
+ycoords = np.array([0.0, 0.22, 0.71, 1.24, 1.88, 2.48])
 
-# Construct the PyBindingCurve object, operating on a homodimer formation 
+# Construct the PyBindingCurve object, operating on a homodimer formation
 # system and add experimental data to the plot
 my_system = pbc.BindingCurve("homodimer formation")
 my_system.add_scatter(xcoords, ycoords)

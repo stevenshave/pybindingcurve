@@ -21,7 +21,7 @@ import numpy as np
 import pybindingcurve as pbc
 
 # Define the custom system
-custom_system="P+L<->PL"
+custom_system = "P+L<->PL"
 
 # Make a pbc BindingCurve defined by the custom system string above
 my_system = pbc.BindingCurve(custom_system)
@@ -29,11 +29,10 @@ my_system = pbc.BindingCurve(custom_system)
 # We can choose to work in a common unit, typically nM, or uM, as long as all
 # numbers are in the same unit, the result is valid.  We assume uM for all
 # concentrations bellow.
-system_parameters = {'p0': np.linspace(0,20),  'l0':5, 'kd_p_l':1}
+system_parameters = {"p0": np.linspace(0, 20), "l0": 5, "kd_p_l": 1}
 
 # We can now add the curve to the plot, name it with an optional name= value.
 my_system.add_curve(system_parameters)
 
 # Show the plot
 my_system.show_plot()
-

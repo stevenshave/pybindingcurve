@@ -8,8 +8,12 @@ import pybindingcurve as pbc
 # concentrations bellow.
 
 # Experimental data
-xcoords = np.array([0.0, 20.0, 40.0, 60.0, 80.0, 100.0, 120.0, 140.0, 160.0, 180.0, 200.0])
-ycoords = np.array([0.544, 4.832, 6.367, 7.093, 7.987, 9.005, 9.079, 8.906, 9.010, 10.046, 9.225])
+xcoords = np.array(
+    [0.0, 20.0, 40.0, 60.0, 80.0, 100.0, 120.0, 140.0, 160.0, 180.0, 200.0]
+)
+ycoords = np.array(
+    [0.544, 4.832, 6.367, 7.093, 7.987, 9.005, 9.079, 8.906, 9.010, 10.046, 9.225]
+)
 
 # Construct the PyBindingCurve object, operating on a simple 1:1 system and
 # add experimental data to the plot

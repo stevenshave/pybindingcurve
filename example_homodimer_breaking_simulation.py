@@ -9,7 +9,7 @@ import time
 # concentrations bellow.
 
 # Define our homodimer breaking system, titrating in inhibitor
-system_parameters = {"p": 30, "kdpp": 10, "i": np.linspace(0,60), "kdpi": 1}
+system_parameters = {"p": 30, "kdpp": 10, "i": np.linspace(0, 60), "kdpi": 1}
 
 # Create the PBC BindingCurve object, expecting a 'homodimer breaking' system.
 my_system = pbc.BindingCurve("homodimer breaking")

@@ -10,7 +10,7 @@ import pybindingcurve as pbc
 # We can choose to work in a common unit, typically nM, or uM, as long as all
 # numbers are in the same unit, the result is valid.  We assume uM for all
 # concentrations bellow.
-system_parameters = {'p': 1, 'l': 10, 'kdpl': 1}
+system_parameters = {"p": 1, "l": 10, "kdpl": 1}
 
 # Make a pbc BindingCurve defined by the simple 1:1 binding system
 my_system = pbc.BindingCurve("1:1")

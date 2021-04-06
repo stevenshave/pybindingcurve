@@ -9,8 +9,8 @@ import sys
 # concentrations bellow.
 
 # Experimental data
-xcoords = np.array([0., 10., 20.0, 30., 40., 50., 60.])
-ycoords = np.array([0,.00680125560,0.935183266,3.49,6.9, 10.7, 14.7])
+xcoords = np.array([0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0])
+ycoords = np.array([0, 0.00680125560, 0.935183266, 3.49, 6.9, 10.7, 14.7])
 
 # Construct the PyBindingCurve object, operating on a homodimer breaking system and add experimental data to the plot
 my_system = pbc.BindingCurve("homodimer breaking")

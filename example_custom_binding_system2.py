@@ -24,11 +24,12 @@ import numpy as np
 import pybindingcurve as pbc
 
 # Define the custom system
-custom_system="""
+
+custom_system = """
     P+C<->PC
     P+U<->PU
     PC+U<->PCU
-    PU+C<->PCU
+    PU+C<->PCU*
 """
 
 
@@ -39,15 +40,22 @@ my_system = pbc.BindingCurve(custom_system)
 # numbers are in the same unit, the result is valid.  We assume uM for all
 # concentrations bellow.
 
-kd_p_c=250
-kd_pc_u=14
-kd_p_u=1000
-kd_pu_c=14
-system_parameters = {'p0': 5,  'c0':np.linspace(0,200), 'u0':50, 'kd_p_c':kd_p_c, 'kd_pc_u':kd_pc_u, 'kd_p_u':kd_p_u,'kd_pu_c':kd_pu_c}
+kd_p_c = 250
+kd_pc_u = 14
+kd_p_u = 1000
+kd_pu_c = 14
+system_parameters = {
+    "p0": 5,
+    "c0": np.linspace(0, 200),
+    "u0": 50,
+    "kd_p_c": 250,
+    "kd_pc_u": 14,
+    "kd_p_u": 1000,
+    "kd_pu_c": 14,
+}
 
 # We can now add the curve to the plot, name it with an optional name= value.
 my_system.add_curve(system_parameters)
 
 # Show the plot
 my_system.show_plot()
-
