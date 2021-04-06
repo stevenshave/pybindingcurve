@@ -19,7 +19,7 @@ import sys
 # numbers are in the same unit, the result is valid.  We assume nM for all
 # concentrations bellow, but divide results by 1000 on plotting to convert to
 # a more convenient µM representation.
-num_points = 500 # Number of points on the two x-axes
+num_points = 500  # Number of points on the two x-axes
 max_inhibitor_concentration = 5000
 maximum_monomer_concentration = 1000
 dimer_kd = 100  # 100 nM dimer KDs
@@ -119,5 +119,5 @@ for axis in ax:
 fig.text(0.05, 0.87, "A)", fontsize=20)
 fig.text(0.514, 0.87, "B)", fontsize=20)
 fig.savefig("tmp_fig1.svg", format="svg")
-plt.subplots_adjust(top=0.829,wspace=0.08)
+plt.subplots_adjust(top=0.829, wspace=0.08)
 plt.show()

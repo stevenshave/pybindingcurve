@@ -2,6 +2,7 @@ import numpy as np
 from .analytical_equations import *
 from .binding_system import BindingSystem
 
+
 class System_analytical_one_to_one__pl(BindingSystem):
     """
     Analytical 1:1 binding system
@@ -9,10 +10,9 @@ class System_analytical_one_to_one__pl(BindingSystem):
     Class defines 1:1 binding, readout is PL
     See https://stevenshave.github.io/pybindingcurve/simulate_1to1.html
     """
+
     def __init__(self):
-        super().__init__(
-            system01_analytical_one_to_one__pl, analytical=True
-        )
+        super().__init__(system01_analytical_one_to_one__pl, analytical=True)
         self.default_readout = "pl"
 
     def query(self, parameters: dict):
@@ -38,10 +38,9 @@ class System_analytical_competition__pl(BindingSystem):
     Class defines 1:1:1 competition, readout is PL
     See https://stevenshave.github.io/pybindingcurve/simulate_competition.html
     """
+
     def __init__(self):
-        super().__init__(
-            system02_analytical_competition__pl, analytical=True
-        )
+        super().__init__(system02_analytical_competition__pl, analytical=True)
         self.default_readout = "pl"
 
     def query(self, parameters: dict):
@@ -67,10 +66,9 @@ class System_analytical_homodimerformation__pp(BindingSystem):
     Class defines homodimer formation, readout is PP
     See https://stevenshave.github.io/pybindingcurve/simulate_homodimerformation.html
     """
+
     def __init__(self):
-        super().__init__(
-            system03_analytical_homodimer_formation__pp, analytical=True
-        )
+        super().__init__(system03_analytical_homodimer_formation__pp, analytical=True)
         self.default_readout = "pp"
 
     def query(self, parameters: dict):
@@ -96,6 +94,7 @@ class System_analytical_homodimerbreaking_pp(BindingSystem):
     Class defines homodimer breaking, readout is PP
     See https://stevenshave.github.io/pybindingcurve/simulate_homodimerbreaking.html
     """
+
     def __init__(self):
         super().__init__(
             system04_analytical_homodimer_breaking__pp,

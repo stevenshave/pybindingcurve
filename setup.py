@@ -19,9 +19,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        # Excluding numpy 1.19.4 as a bug in the windows 10 update 2004 
-        # causes a problem - see 
-        # https://tinyurl.com/y3dm3h86, and 
+        # Excluding numpy 1.19.4 as a bug in the windows 10 update 2004
+        # causes a problem - see
+        # https://tinyurl.com/y3dm3h86, and
         # https://github.com/numpy/numpy/issues/16744.
         "numpy>=1.18.0,!=1.19.4",
         "matplotlib>=3.2.1",
