@@ -1,5 +1,6 @@
 import numpy as np
 from .analytical_equations import *
+from mpmath import mp
 from .binding_system import BindingSystem
 
 
@@ -12,6 +13,7 @@ class System_analytical_one_to_one__pl(BindingSystem):
     """
 
     def __init__(self):
+        mp.dps = 100
         super().__init__(system01_analytical_one_to_one__pl, analytical=True)
         self.default_readout = "pl"
 
@@ -40,6 +42,7 @@ class System_analytical_competition__pl(BindingSystem):
     """
 
     def __init__(self):
+        mp.dps = 100
         super().__init__(system02_analytical_competition__pl, analytical=True)
         self.default_readout = "pl"
 
@@ -68,6 +71,7 @@ class System_analytical_homodimerformation__pp(BindingSystem):
     """
 
     def __init__(self):
+        mp.dps = 100
         super().__init__(system03_analytical_homodimer_formation__pp, analytical=True)
         self.default_readout = "pp"
 
@@ -96,6 +100,7 @@ class System_analytical_homodimerbreaking_pp(BindingSystem):
     """
 
     def __init__(self):
+        mp.dps = 100
         super().__init__(
             system04_analytical_homodimer_breaking__pp,
             analytical=True,
