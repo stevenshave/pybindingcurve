@@ -1,21 +1,24 @@
 from inspect import signature
 import numpy as np
+
+
 class BindingSystem:
     """
     BindingSystem class, used to determine the type of binding systems being used
 
-    BindingSystem objects are governed with differnt protein-ligand binding 
-    system being represented. It also provides methods for visualisation, 
+    BindingSystem objects are governed with differnt protein-ligand binding
+    system being represented. It also provides methods for visualisation,
     querying and the fitting of system parameters.
 
     Parameters
     ----------
     bindingsystem : func
-        A function deriving the concentration of complex formed. This fuction 
+        A function deriving the concentration of complex formed. This fuction
         may be varied based on different protein-ligand binding systems.
     analytical: bool
         Perform a analytical analysis (default = False)
     """
+
     system = None
     analytical = False
     arguments = []
@@ -26,17 +29,17 @@ class BindingSystem:
         Find the changing parameter
 
         Determine which parameter is changing with titration, including the
-        concentration of the protein or ligand. A set of varied concentrations 
-        of parameter are in the form of array-like or list data type   
-      
+        concentration of the protein or ligand. A set of varied concentrations
+        of parameter are in the form of array-like or list data type
+
         Parameters
         ----------
         params : dict
             Parameters defining the binding system to be simulated.
-        
+
         Returns
         -------
-        A list containing the keys of params indicating the name of 
+        A list containing the keys of params indicating the name of
             changing parameters.
         """
         changing_list = []
@@ -52,9 +55,9 @@ class BindingSystem:
         """
         Construct BindingSystem objects
 
-        BindingSystem objects are initialised with various subclasses under 
-        the BindingSystem super class definding different protein-ligand 
-        binding systems, such as 'System_analytical_one_to_one_pl' or 
+        BindingSystem objects are initialised with various subclasses under
+        the BindingSystem super class definding different protein-ligand
+        binding systems, such as 'System_analytical_one_to_one_pl' or
         'System_analytical_homodimerformation_pp', etc.
 
         Parameters
@@ -79,19 +82,19 @@ class BindingSystem:
         Remove minimum and maximum readout from the orignal system parameters
         (Replace the original dict)
 
-        Output the original dict contains the orignal system parameters with 
+        Output the original dict contains the orignal system parameters with
         removal the minimum and maximum readout signel of the system
 
         Parameters
         ----------
         d : dict
             Parameters defining the binding system to be simulated
-        
+
         Returns
         -------
         dict
-            Return the original dict contains original system parameters without 
-            minimum and maximum readout.  
+            Return the original dict contains original system parameters without
+            minimum and maximum readout.
         """
         if "ymin" in d.keys():
             del d["ymin"]
@@ -111,12 +114,12 @@ class BindingSystem:
         ----------
         input : dict
             Parameters defining the binding system to be simulated
-        
+
         Returns
         -------
         dict
-            Generate a new dict contains original system parameters without 
-            minimum and maximum readout.  
+            Generate a new dict contains original system parameters without
+            minimum and maximum readout.
         """
         d = dict(input)
         if "ymin" in d.keys():
@@ -135,10 +138,10 @@ class BindingSystem:
         ----------
         parameters : dict
             Parameters defining the binding system to be simulated.
-        
+
         Returns
         -------
-        Single floating point of the concentration of the binding complex, or 
+        Single floating point of the concentration of the binding complex, or
             array-like Response/signal of the system.
         """
         results = None
@@ -148,10 +151,8 @@ class BindingSystem:
         missing = sorted(
             list((set(self.arguments) - set(parameters.keys())) - set(["all_concs"]))
         )
-        if len(missing) > 0:
-            print("The following parameters were missing!", missing)
-            return None
-
+        assert len(missing)==0, f"The following parameters were missing: {missing}"
+        
         # Are any parameters changing?
         changing_parameters = self._find_changing_parameters(parameters)
         if changing_parameters is None:  # Querying single point
@@ -163,7 +164,9 @@ class BindingSystem:
             # At least 1 changing parameter
             if len(changing_parameters) == 1:
                 results = None
-                num_solutions = getattr(self, "num_solutions", 1) # Get attribure of num_solutions in BindingSystem class (default = 1)
+                num_solutions = getattr(
+                    self, "num_solutions", 1
+                )  # Get attribure of num_solutions in BindingSystem class (default = 1)
                 if num_solutions == 1:
                     results = np.empty(len(parameters[changing_parameters[0]]))
                 else:
@@ -201,14 +204,14 @@ class BindingSystem:
         """
         Check the existance of the minimum or maximum readout
 
-        Check the minimum or maximum readout signal set by user is in 
-        the binding system parameters 
+        Check the minimum or maximum readout signal set by user is in
+        the binding system parameters
 
         Parameters
         ----------
         parameters : dict
             Parameters defining the binding system to be simulated.
-        
+
         Returns
         -------
         Boolean (True or False)
