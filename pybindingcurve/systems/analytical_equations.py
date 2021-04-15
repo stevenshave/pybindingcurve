@@ -1,6 +1,4 @@
-from mpmath import mpf, sqrt, power, mp, fabs
-
-mp.dps = 100
+from mpmath import mpf, sqrt, power, fabs, almosteq
 
 # 1:1 binding - see https://stevenshave.github.io/pybindingcurve/simulate_1to1.html
 # Readout is PL
@@ -19,8 +17,8 @@ def system02_analytical_competition__pl(p, l, i, kdpl, kdpi):
     i = mpf(i)
     kdpl = mpf(kdpl)
     kdpi = mpf(kdpi)
-    if fabs(kdpl - kdpi) < 1e-9:
-        kdpi += 1e-9
+    if almosteq(kdpl, kdpi, 1e-10):
+        kdpi += 1e-10
     if kdpl < kdpi:
         return (
             -(
