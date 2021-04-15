@@ -13,11 +13,11 @@ class System_analytical_one_to_one__pl(BindingSystem):
     """
 
     def __init__(self):
-        mp.dps = 100
         super().__init__(system01_analytical_one_to_one__pl, analytical=True)
         self.default_readout = "pl"
 
     def query(self, parameters: dict):
+        mp.dps = 100
         if self._are_ymin_ymax_present(parameters):
             parameters_no_min_max = self._remove_ymin_ymax_keys_from_dict_return_new(
                 parameters
@@ -42,11 +42,11 @@ class System_analytical_competition__pl(BindingSystem):
     """
 
     def __init__(self):
-        mp.dps = 100
         super().__init__(system02_analytical_competition__pl, analytical=True)
         self.default_readout = "pl"
 
     def query(self, parameters: dict):
+        mp.dps = 100
         if self._are_ymin_ymax_present(parameters):
             parameters_no_min_max = self._remove_ymin_ymax_keys_from_dict_return_new(
                 parameters
@@ -71,11 +71,11 @@ class System_analytical_homodimerformation__pp(BindingSystem):
     """
 
     def __init__(self):
-        mp.dps = 100
         super().__init__(system03_analytical_homodimer_formation__pp, analytical=True)
         self.default_readout = "pp"
 
     def query(self, parameters: dict):
+        mp.dps = 100
         if self._are_ymin_ymax_present(parameters):
             parameters_no_min_max = self._remove_ymin_ymax_keys_from_dict_return_new(
                 parameters
@@ -100,7 +100,6 @@ class System_analytical_homodimerbreaking_pp(BindingSystem):
     """
 
     def __init__(self):
-        mp.dps = 100
         super().__init__(
             system04_analytical_homodimer_breaking__pp,
             analytical=True,
@@ -109,6 +108,7 @@ class System_analytical_homodimerbreaking_pp(BindingSystem):
         self.num_solutions = 2
 
     def query(self, parameters: dict):
+        mp.dps = 100
         if self._are_ymin_ymax_present(parameters):
             parameters_no_min_max = self._remove_ymin_ymax_keys_from_dict_return_new(
                 parameters
