@@ -25,6 +25,12 @@ maximum_monomer_concentration = 1000
 dimer_kd = 100  # 100 nM dimer KDs
 inhibitor_kd = 10  # 10 nM inhibitor KDs
 
+# A reviewer enquired as to why the x-axes of plots in figure 1 were not
+# using a log scale. In testing, we found this obscured the critical crossover
+# points discussed in the text.  To enable this log scale on x-axes, set the
+# bellow variable to True, the most insightful figure is achieved with 'False'
+use_log_xaxis_scale=False
+
 # Calculate formation concentrations
 x_axis_formation = np.linspace(0, maximum_monomer_concentration, num=num_points)
 x_axis_breaking = np.linspace(0, max_inhibitor_concentration, num=num_points)
@@ -36,7 +42,7 @@ pbc_homodimer_formation = pbc.BindingCurve("homodimer formation")
 pbc_heterodimer_formation = pbc.BindingCurve(
     "1:1"
 )  # Heterodimer formation is just the same as 1:1, or P+L<->PL
-pbc_homodimer_breaking = pbc.BindingCurve("homodimer breaking")
+pbc_homodimer_breaking = pbc.BindingCurve("homodimer breakinglagrange")
 pbc_heterodimer_breaking = pbc.BindingCurve("competition")
 
 # Perform the calculations
@@ -75,7 +81,8 @@ ax[0].plot(
     "k",
     label="Heterodimer monomers",
 )
-ax[0].set_xlim(0, maximum_monomer_concentration / 1000)
+if not use_log_xaxis_scale:
+    ax[0].set_xlim(0, maximum_monomer_concentration / 1000)
 ax[0].set_ylim(0, 1)
 ax[0].legend()
 ax[0].set_xlabel(r"[Monomers] ($\mathrm{\mu}$M)", fontsize=14)
@@ -100,7 +107,8 @@ ax[1].plot(
     "k",
     label=r"1 $\mathrm{\mu}$M heterodimer monomers",
 )
-ax[1].set_xlim(0, max_inhibitor_concentration / 1000)
+if not use_log_xaxis_scale:
+    ax[1].set_xlim(0, max_inhibitor_concentration / 1000)
 ax[1].set_ylim(0, 1)
 ax[1].legend()
 ax[1].set_xlabel(r"[I$_0$] ($\mathrm{\mu}$M)", fontsize=14)
@@ -110,6 +118,9 @@ ax[1].set_title(
 Dimer K$\mathrm{_D}$s = 100 nM, inhibitor K$\mathrm{_D}$=10 nM""",
     fontsize=14,
 )
+if use_log_xaxis_scale:
+    ax[0].set_xscale("log")
+    ax[1].set_xscale("log")
 ax[1].grid()
 plt.tight_layout(rect=(0, 0, 1, 0.9425), w_pad=-0.4)
 
