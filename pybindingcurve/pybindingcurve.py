@@ -1,9 +1,5 @@
 """PyBindingCurve - a package to simulate protein-ligand binding systems
 
-TODO:
-* Check combinations of readout with/without ymin/ymax
-
-
 """
 
 
@@ -11,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import lmfit
 from pybindingcurve.systems import *
+from typing import Union
 
 pbc_plot_style = {
     "axis_label_size": 12,
@@ -142,7 +139,7 @@ class _Curve:
             X coordinates of the binding system to be used to present a binding curve
         ycoors : np.array
             Y coordinates of the binding system to be used to present a binding curve
-        series_name : str, Optional 
+        series_name : str, Optional
             Name of curve to appear in plot legends
         """
         self.xcoords = xcoords
@@ -167,6 +164,7 @@ class BindingCurve:
         system (such as '1:1' or 'competition', etc), or a custom binding
         system definition string.
     """
+    arguments=None
     system = None
     _last_custom_readout = None
     curves = []
@@ -205,18 +203,22 @@ class BindingCurve:
         Single floating point, or array-like
             Response/signal of the system
         """
-        
+
         # Compound return statement, return the query, otherwide apply the
         # readout object to it and return the second returned variable
-        return self.system.query(parameters) if readout is None else readout(parameters, self.system.query(parameters))[1]
+        return (
+            self.system.query(parameters)
+            if readout is None
+            else readout(parameters, self.system.query(parameters))[1]
+        )
 
     def _find_changing_parameters(self, params: dict):
         """
         Find the changing parameter
 
         Determine which parameter is changing with titration, including the
-        concentration of the protein or ligand. A set of varied concentrations 
-        of parameter are in the form of array-like or list data type   
+        concentration of the protein or ligand. A set of varied concentrations
+        of parameter are in the form of array-like or list data type
 
         Parameters
         ----------
@@ -225,37 +227,45 @@ class BindingCurve:
 
         Returns
         -------
-        A list containing the keys of params indicating the name of 
+        A list containing the keys of params indicating the name of
             changing parameters.
         """
-        changing_list = [p for p in params.keys() if isinstance(params[p], np.ndarray) or isinstance(params[p], list)]
-        return changing_list if len(changing_list)>0 else None
+        changing_list = [
+            p
+            for p in params.keys()
+            if isinstance(params[p], np.ndarray) or isinstance(params[p], list)
+        ]
+        return changing_list if len(changing_list) > 0 else None
 
-    def __init__(self, binding_system: [str, BindingSystem]):
+    def __init__(self, binding_system:Union[str, BindingSystem]):
         """
         Construct BindingCurve objects
 
-        BindingCurve objects are initialised with different protein-ligand 
-        binding systems definded by user. This method can also initialises 
-        the objects as an interface throught the pbc.BindingSystem class, 
-        providing for simulation, visualisation, querying and the fitting 
-        of system parameters. 
+        BindingCurve objects are initialised with different protein-ligand
+        binding systems definded by user. This method can also initialises
+        the objects as an interface throught the pbc.BindingSystem class,
+        providing for simulation, visualisation, querying and the fitting
+        of system parameters.
 
         Parameters
         ----------
         binding_system : str or BindingSystem
-            Define the binding system which will govern this BindingCurve 
-            object. Can either be a BindingSystem object or a human readable 
+            Define the binding system which will govern this BindingCurve
+            object. Can either be a BindingSystem object or a human readable
             string shortcut, such as '1:1' or 'competition', etc.
         """
         if isinstance(binding_system, str):
             # Check if its a custom defined system - containing <->
-            if binding_system.find("<->")!=-1:
-                self.system=System_lagrange_custom(binding_system)
-            
-            binding_system = binding_system.lower().replace(" ","")
+            if binding_system.find("<->") != -1:
+                # Custom binding system, check if it starts with Lagrange
+                if binding_system.lower().startswith("lagrange"):
+                    self.system = System_lagrange_custom(binding_system[8:])
+                else:
+                    self.system = System_minimizer_custom(binding_system)
+
+            binding_system = binding_system.lower().replace(" ", "")
             # 1:1
-            if binding_system in ["simple", "1:1"]:
+            if binding_system in ["simple", "1:1", "1:1analytical"]:
                 self.system = System_analytical_one_to_one__pl()
             # 1:1 lagrange
             if binding_system in ["simplelagrange", "1:1lagrange"]:
@@ -264,30 +274,51 @@ class BindingCurve:
             if binding_system in ["simplekinetic", "1:1kinetic"]:
                 self.system = System_kinetic_one_to_one__pl()
             # 1:1 minimised
-            if binding_system in ["simplemin", "simpleminimized", "simpleminimised", "1:1min", "1:1minimized", "1:1minimised"]:
+            if binding_system in [
+                "simplemin",
+                "simpleminimized",
+                "simpleminimised",
+                "1:1min",
+                "1:1minimized",
+                "1:1minimised",
+            ]:
                 self.system = System_minimizer_one_to_one__pl()
-            
+
             # Homodimer formation
-            if binding_system in ["homodimerformation","homodimer"]:
+            if binding_system in ["homodimerformation", "homodimer"]:
                 self.system = System_analytical_homodimerformation__pp()
             # Homodimer formation lagrange
-            if binding_system in ["homodimerformationlagrange","homodimerlagrange"]:
+            if binding_system in ["homodimerformationlagrange", "homodimerlagrange"]:
                 self.system = System_lagrange_homodimerformation__pp()
             # Homodimer formation kinetic
-            if binding_system in ["homodimerformationkinetic","homodimerkinetic"]:
+            if binding_system in ["homodimerformationkinetic", "homodimerkinetic"]:
                 self.system = System_kinetic_homodimerformation__pp()
             # Homodimer formation minimizer
-            if binding_system in ["homodimerformationmin","homodimerformationminimiser","homodimerformationminimizer", "homodimermin","homodimerminimiser","homodimerminimizer",]:
+            if binding_system in [
+                "homodimerformationmin",
+                "homodimerformationminimiser",
+                "homodimerformationminimizer",
+                "homodimermin",
+                "homodimerminimiser",
+                "homodimerminimizer",
+            ]:
                 self.system = System_minimizer_homodimerformation__pp()
 
             # Competition
-            if binding_system in ["competition", "1:1:1"]:
+            if binding_system in ["competition", "1:1:1", "competitionanalytical", "1:1:1analytical"]:
                 self.system = System_analytical_competition__pl()
             if binding_system in ["competitionlagrange", "1:1:1lagrange"]:
                 self.system = System_lagrange_competition_pl()
             if binding_system in ["competitionkinetic", "1:1:1kinetic"]:
                 self.system = System_kinetic_competition_pl()
-            if binding_system in ["competitionmin","competitionminimiser","competitionminimizer","1:1:1min","1:1:1minimiser","1:1:1minimizer"]:
+            if binding_system in [
+                "competitionmin",
+                "competitionminimiser",
+                "competitionminimizer",
+                "1:1:1min",
+                "1:1:1minimiser",
+                "1:1:1minimizer",
+            ]:
                 self.system = System_minimizer_competition__pl()
 
             # Homodimer breaking minimizer
@@ -325,18 +356,18 @@ class BindingCurve:
         """
         Initialise setup to being ready for curve plotting
 
-        Control setups needed for plotting a binding plot including layouts 
-        of subplots, grid lines, and y-axis view limits, etc.   
+        Control setups needed for plotting a binding plot including layouts
+        of subplots, grid lines, and y-axis view limits, etc.
         """
-        
+
         if self.fig is None:
-            
+
             # Here we reset a lot as the user may be making multiple
             # plots one after the other
             self._last_custom_readout = None
             self.curves = []
             self.axes = None
-            
+
             self._min_x_axis = 0.0
             self._max_x_axis = 0.0
             self._min_y_axis = 0.0
@@ -356,7 +387,7 @@ class BindingCurve:
         """
         Add a curve to the plot
 
-        Add a curve as specified by the system parameters to the 
+        Add a curve as specified by the system parameters to the
         pbc.BindingSystem's internal plot using the underlying binding system
         specified on intitialisation.
 
@@ -387,17 +418,18 @@ class BindingCurve:
 
         # It may be that we have multiple solutions from a direct analytical
         # solution.  If so, then we need to add all curves.
-        if y_values.ndim > 1: # Multiple solutions
+        if y_values.ndim > 1:  # Multiple solutions
             for i in range(y_values.ndim):
                 self.curves.append(
                     _Curve(parameters[changing_parameters[0]], y_values[i])
                 )
         else:
-            self.curves.append( # Only one solution
-                _Curve(parameters[changing_parameters[0]], y_values))
+            self.curves.append(  # Only one solution
+                _Curve(parameters[changing_parameters[0]], y_values)
+            )
         self._last_known_changing_parameter = changing_parameters[0]
-        
-        for curve_it, curve in enumerate(self.curves[self._num_added_traces:]):
+
+        for curve_it, curve in enumerate(self.curves[self._num_added_traces :]):
             self._num_added_traces += 1
             curve_name_with_number = None
             if name is None:
@@ -420,10 +452,8 @@ class BindingCurve:
             self._min_x_axis = np.nanmin(
                 [self._min_x_axis, parameters[changing_parameters[0]][0]]
             )
-            self._min_y_axis = np.nanmin(
-                [self._min_y_axis, np.nanmin(curve.ycoords)])
-            self._max_y_axis = np.nanmax(
-                [self._max_y_axis, np.nanmax(curve.ycoords)])
+            self._min_y_axis = np.nanmin([self._min_y_axis, np.nanmin(curve.ycoords)])
+            self._max_y_axis = np.nanmax([self._max_y_axis, np.nanmax(curve.ycoords)])
 
     def add_scatter(self, xcoords, ycoords, name: str = None):
         """
@@ -443,15 +473,14 @@ class BindingCurve:
             Name of series to appear in plot legends
         """
         self._initialize_plot()
-        self._num_added_sets_of_points+=1
+        self._num_added_sets_of_points += 1
         if name is None:
-                name = f"Data "+str(self._num_added_sets_of_points)
+            name = f"Data " + str(self._num_added_sets_of_points)
         self.axes.scatter(xcoords, ycoords, label=name)
         self._min_x_axis = min(self._min_x_axis, np.min(np.real(xcoords)))
         self._max_x_axis = max(self._max_x_axis, np.max(np.real(xcoords)))
         self._min_y_axis = min(self._min_y_axis, np.min(np.real(ycoords)))
         self._max_y_axis = max(self._max_y_axis, np.max(np.real(ycoords)))
-     
 
     def show_plot(
         self,
@@ -503,7 +532,7 @@ class BindingCurve:
             File name/location where svg will be written
         """
         assert self.fig is not None, "Nothing to plot"
-        
+
         if min_x is not None:
             self._min_x_axis = min_x
         if max_x is not None:
@@ -583,12 +612,11 @@ class BindingCurve:
                 metadata={"Title": "pyBindingCurve plot"},
             )
         if svg_filename is not None:
-            plt.savefig(svg_filename, metadata={
-                        "Title": "pyBindingCurve plot"})
+            plt.savefig(svg_filename, metadata={"Title": "pyBindingCurve plot"})
         plt.show()
         # Calling show displays, and then consumes the figure, so we should
         # set it to Null so that the next initialisation sets up a new figure.
-        self.fig=None
+        self.fig = None
         plt.clf()
         plt.cla()
         plt.close()
@@ -632,7 +660,7 @@ class BindingCurve:
             Tuple containing a dictionary of best fit systems parameters,
             then a dictionary containing the accuracy for fitted variables.
         """
-        
+
         # Make a copy of system parameters and operate on the copy, so that
         # the original remains untouched.
         system_parameters_copy = dict(system_parameters)
@@ -642,8 +670,7 @@ class BindingCurve:
             return None
         missing = sorted(
             list(
-                set(self.system.arguments) -
-                set([*system_parameters_copy] + [*to_fit])
+                set(self.system.arguments) - set([*system_parameters_copy] + [*to_fit])
             )
         )
         if len(missing) > 0:
@@ -652,17 +679,24 @@ class BindingCurve:
             )
             print("Missing variables are: ", missing)
             return None
-        
+
         # Often, people forget to set the readout, or include ymin as a system
         # parameter which indicates we are dealing with fitting signal data.
         # Check if the changing parameter exceeds the matching ycoord at any
         # point. If so, warn.
 
-        changing_parameter=self._find_changing_parameters(system_parameters)
-        assert changing_parameter is not None, "Nothing changes in the data in order to fit... cannot fit."
-        if any((system_parameters[changing_parameter[0]]-ycoords)<0):
-            if 'ymin' not in system_parameters.keys() and 'ymax' not in system_parameters.keys():
-                print("Warning: Some x-values are greater than y-values, implying you forgot to include a ymin or ymax to indicate your ycoords are signal, not concentrations, please provide a ymin in the fit parameters to indicate it is a signal")
+        changing_parameter = self._find_changing_parameters(system_parameters)
+        assert (
+            changing_parameter is not None
+        ), "Nothing changes in the data in order to fit... cannot fit."
+        if any((system_parameters[changing_parameter[0]] - ycoords) < 0):
+            if (
+                "ymin" not in system_parameters.keys()
+                and "ymax" not in system_parameters.keys()
+            ):
+                print(
+                    "Warning: Some x-values are greater than y-values, implying you forgot to include a ymin or ymax to indicate your ycoords are signal, not concentrations, please provide a ymin in the fit parameters to indicate it is a signal"
+                )
 
         # Add parameters for lmfit, accounting for bounds
         if bounds is None:
@@ -670,9 +704,9 @@ class BindingCurve:
         params = lmfit.Parameters()
         for varname in to_fit.keys():
             # Do not be tempted to set bnd_min to 0 to help the minimizer as
-            # lmfit (at least of version 1.0.1) then fails to work... no 
+            # lmfit (at least of version 1.0.1) then fails to work... no
             # explanation as to why is present, in lmfit documentation,
-            # only that little advantage is gained by narrowing bounds and 
+            # only that little advantage is gained by narrowing bounds and
             # even outlandishly wide bounds has little effect.
             # See https://lmfit.github.io/lmfit-py/bounds.html
             bnd_min = -np.inf
@@ -680,19 +714,19 @@ class BindingCurve:
             if varname in bounds.keys():
                 bnd_min = bounds[varname][0]
                 bnd_max = bounds[varname][1]
-            params.add(
-                varname, value=to_fit[varname], min=bnd_min, max=bnd_max)
+            params.add(varname, value=to_fit[varname], min=bnd_min, max=bnd_max)
 
         lmmini = lmfit.Minimizer(
-            self._residual, params, fcn_args=(
-                system_parameters_copy, to_fit, ycoords)
+            self._residual, params, fcn_args=(system_parameters_copy, to_fit, ycoords)
         )
         result = lmmini.minimize()
 
         # Check that any fitted KDs are not negative
         for k in system_parameters_copy.keys():
             if k.startswith("kd"):
-                assert system_parameters_copy[k]>0, f"Error, Fitted KD is negative ({system_parameters_copy[k]}), unable to fit"
+                assert (
+                    system_parameters_copy[k] > 0
+                ), f"Error, Fitted KD is negative ({system_parameters_copy[k]}), unable to fit"
 
         # Return 2 things, first the newly fitted system dictionary, and then
         # a dictionary of absolute fit errors.
@@ -705,14 +739,14 @@ class BindingCurve:
         """
         Residual function for fitting parameters.
 
-        Helper function for lm_fit, calculating residual remaining for probed 
+        Helper function for lm_fit, calculating residual remaining for probed
         system parameters.
 
         Parameters
         ----------
         params : dict
             A dictionary of the parameters required to be evaluated to a fit model.
-        system_parameters : dict 
+        system_parameters : dict
             Dictionary containing system parameters, will be used as arguments to the systems equations.
         to_fit : dict
             Dictionary containing system parameters to fit.
@@ -725,3 +759,9 @@ class BindingCurve:
         for value in params:
             system_parameters[value] = float(params[value])
         return self.system.query(system_parameters) - y
+    
+    def get_system_arguments(self):
+            if self.system is None:
+                return None
+            else:
+                return self.system.arguments

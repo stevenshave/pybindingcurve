@@ -1,13 +1,11 @@
 # Custom to pybindingcurve
-tmp*.py
-tmp*.npz
-dat*.npz
-tmp*.txt
+tmp_*
+tmp-*
 heatmap*.pkl
 .vscode
 system_results.csv
 testbed.py
-Figure2.*
+Figure?.*
 *.mp4
 # Byte-compiled / optimized / DLL files
 __pycache__/

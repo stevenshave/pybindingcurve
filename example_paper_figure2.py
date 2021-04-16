@@ -58,8 +58,7 @@ def generate_heatmaps(
     pbc_homodimer_breaking = pbc.BindingCurve("homodimer breaking")
     pbc_heterodimer_breaking = pbc.BindingCurve("competition")
 
-    assert not homodimer_map_file.exists(), "Output file already exists"
-    assert not heterodimer_map_file.exists(), "Output file already exists"
+    print("Building homdimer heatmap file")
     j1 = pool.apply_async(
         get_2D_grid_values,
         [
@@ -75,6 +74,9 @@ def generate_heatmaps(
             plot_steps,
         ],
     )
+
+    print("Building heterodimer heatmap file")
+
     j2 = pool.apply_async(
         get_2D_grid_values,
         [
@@ -98,12 +100,7 @@ def load_heatmap(filepath: Path):
     if filepath.exists():
         mat = pickle.load(open(filepath, "rb"))
         print(filepath, "shape=", mat.shape)
-        # Be careful with the size of the matrices plotted in the heatmap.
-        # The previosuly generated 800x800 matrices result in a ~360 MB SVG
-        # which crashes inkscape on a 16GB machine. Downsampling by a factor
-        # of 2 in each dimension produces a ~90 MB SVG which inkacape still
-        # struggles with.
-        mat = mat[::4, ::4]  # To downsample, change ::1 to ::2 etc...
+        # mat = mat[::2, ::2]  # To downsample, if required for saved matrixq
         return mat
     else:
         return None
@@ -143,7 +140,6 @@ def make_plot(homodimer_map_file: Path, heterodimer_map_file: Path):
         cbar=True,
         cbar_kws=dict(pad=0.01),
     )
-    # ax[2].get_yaxis().set_visible(False)
 
     x_labels = ["9 (nM)", "6 ($\mathrm{\mu}$M)", "3 (mM)"]
     x_labels.reverse()
@@ -187,12 +183,17 @@ def make_plot(homodimer_map_file: Path, heterodimer_map_file: Path):
 
 
 if __name__ == "__main__":
-    plot_steps = 800
+    # Be careful with the size of the matrices determined by plot_steps,
+    # 800x800 matrices result in a ~360 MB SVG which crashes inkscape on
+    # a 16GB machine. Downsampling by a factor of 2 in each dimension 
+    # produces a ~90 MB SVG which inkacape still struggles with.
+    # Paper figure generated with plot_steps=400. The output PNG is
+    # certainly easier to deal with than the SVG
+    
+    plot_steps = 400
     homodimer_map_file = Path(f"heatmaphomo-5.0.pkl")
     heterodimer_map_file = Path(f"heatmaphetero-5.0.pkl")
-    # homodimer_map_file=Path(f"heatmaphomo-oldver.pkl")
-    # heterodimer_map_file=Path(f"heatmaphetero-oldver.pkl")
-    if not homodimer_map_file.exists() and not heterodimer_map_file.exists():
+    if not homodimer_map_file.exists() or not heterodimer_map_file.exists():
         generate_heatmaps(
             homodimer_map_file, heterodimer_map_file, plot_steps=plot_steps
         )

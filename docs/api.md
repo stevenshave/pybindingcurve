@@ -216,31 +216,37 @@ With curves, scatterpoints and fits applied, we may display the plot.
 
 ## pbc.systems
 
-pbc.systems contains all default systems supplied with PBC, and exports them to the PBC namespace. Systems may be passed as arguments to pbc.BindingCurve objects upon initialisation to define the underlying system governing simulation, queries, and fitting. Additionally, the following shortcut strings may be used as shortcuts:
+pbc.systems contains all default systems supplied with PBC, and exports them to the PBC namespace. Systems may be passed as arguments to pbc.BindingCurve objects upon initialization to define the underlying system governing simulation, queries, and fitting. Additionally, the following shortcut strings may be used as shortcuts, all spaces are removed from the input string, and so are represented without whitespace bellow:
 
 |Shortcut string list|pbc.systems equivalent|
 |---|---|
-|simple, 1:1|System_analytical_one_to_one__pl|
-|simplelagrange, simple lagrange, 1:1lagrange, 1:1 lagrange|System_lagrange_one_to_one__pl|
-|simplekinetic, simple kinetic, 1:1kinetic, 1:1 kinetic|	System_kinetic_one_to_one__pl|
-|homodimerformation, homodimer formation|	System_analytical_homodimerformation__pp|
-|homodimerformationlagrange, homodimer formation lagrange|System_lagrange_homodimerformation__pp|
-|homodimerformationkinetic, homodimer formation kinetic|System_kinetic_homodimerformation__pp|
+|simple, 1:1, 1:1analytical|System_analytical_one_to_one__pl|
+|1:1min, 1:1minimizer, 1:1minimiser|System_minimizer_one_to_one__pl|
+|simplelagrange, 1:1lagrange|System_lagrange_one_to_one__pl|
+|simplekinetic, 1:1kinetic|	System_kinetic_one_to_one__pl|
+|homodimerformation|	System_analytical_homodimerformation__pp|
+|homodimerformationmin, homodimerformationminimiser, homodimerformationminimizer, homodimermin, homodimerminimiser, homodimerminimizer|	System_minimizer_homodimerformation__pp|
+|homodimerformationlagrange|System_lagrange_homodimerformation__pp|
+|homodimerformationkinetic|System_kinetic_homodimerformation__pp|
 |competition, 1:1:1|System_analytical_competition__pl|
-|competition lagrange, competitionlagrange|System_lagrange_competition__pl|
-|homodimerbreaking, homodimer breaking, homodimerbreakinglagrange, homodimer breaking lagrange|System_lagrange_homodimerbreaking__pp|
-|homodimerbreakingkinetic, homodimer breaking kinetic|System_kinetic_homodimerbreaking__pp|
-|homodimerbreakinganalytical, homodimer breaking analytical|System_analytical_homodimerbreaking__pp|
-|1:2, 1:2 lagrange| System_lagrange_1_to_2__pl12|
-|1:3, 1:3 lagrange| System_lagrange_1_to_3__pl123|
-|1:4, 1:4 lagrange| System_lagrange_1_to_4__pl1234|
-|1:5, 1:5 lagrange| System_lagrange_1_to_5__pl12345|
+|competitionmin, competitionminimiser, competitionminimizer, 1:1:1min, 1:1:1minimiser, 1:1:1minimizer|System_minimizer_competition__pl|
+|competitionlagrange|System_lagrange_competition__pl|
+|homodimerbreaking, homodimerbreakingmin, homodimerbreakingminimiser, homodimerbreakingminimizer|System_minimizer_homodimerbreaking__pp|
+|homodimerbreakinglagrange|System_lagrange_homodimerbreaking__pp|
+|homodimerbreakingkinetic|System_kinetic_homodimerbreaking__pp|
+|homodimerbreakinganalytical|System_analytical_homodimerbreaking__pp|
+|1:2, 1:2min, 1:2minimizer, 1:2minimiser| System_minimizer_1_to_2__pl12|
+|1:2lagrange| System_lagrange_1_to_2__pl12|
+|1:3, 1:3min, 1:3minimizer, 1:3minimiser|System_minimizer_1_to_3__pl123|
+|1:3lagrange| System_lagrange_1_to_3__pl123|
+|1:4, 1:4lagrange| System_lagrange_1_to_4__pl1234|
+|1:5, 1:5lagrange| System_lagrange_1_to_5__pl12345|
 
 Custom systems can be passed allowing the use of custom binding systems derived from a simple syntax.  This is in the form of a string with reactions separated either on newlines, commas, or a combination of the two.  Reactions take the form:
 
 - r1+r2<->p
 
-Denoting reactant 1 + reactant2 form p.  PBC will generate andsolve custom lagrangian systems. Readouts are signified by inclusion of a star (*) on a species.  If no star is found, then the first seen product is used. Some system examples follow:
+Denoting reactant1 + reactant2 form the product.  PBC will generate and solve custom defined constrained systems. Readouts are signified by inclusion of a star (*) on a species.  If no star is found, then the first seen product is used. Some system examples follow:
 
 - "P+L<->PL" - standard protein-ligand binding
 - "P+L<->PL, P+I<->PI" - competition binding
@@ -248,7 +254,7 @@ Denoting reactant 1 + reactant2 form p.  PBC will generate andsolve custom lagra
 - "monomer+monomer<->dimer" - dimer formation
 - "P+L<->PL1, P+L<->PL2, PL1+L<->PL1L2, PL2+L<->PL1L2" - 1:2 site binding
 
-KDs passed to custom systems use underscores to separate species. P+L<->PL would require the KD passed as kd_p_l. Running with incomplete system parameters will prompt for the correct ones.
+KDs passed to custom systems use underscores to separate species and products. P+L<->PL would require the KD passed as kd_p_l_pl. Running with incomplete system parameters will prompt for the correct ones.
 
 
 ## pbc.BindingSystem

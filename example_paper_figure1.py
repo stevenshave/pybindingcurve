@@ -42,7 +42,7 @@ pbc_homodimer_formation = pbc.BindingCurve("homodimer formation")
 pbc_heterodimer_formation = pbc.BindingCurve(
     "1:1"
 )  # Heterodimer formation is just the same as 1:1, or P+L<->PL
-pbc_homodimer_breaking = pbc.BindingCurve("homodimer breakinglagrange")
+pbc_homodimer_breaking = pbc.BindingCurve("homodimer breaking")
 pbc_heterodimer_breaking = pbc.BindingCurve("competition")
 
 # Perform the calculations
@@ -129,6 +129,7 @@ for axis in ax:
     axis.tick_params(axis="both", which="minor", labelsize=14)
 fig.text(0.05, 0.87, "A)", fontsize=20)
 fig.text(0.514, 0.87, "B)", fontsize=20)
-fig.savefig("tmp_fig1.svg", format="svg")
+plt.savefig("Figure1.svg")
+plt.savefig("Figure1.png", dpi=300)
 plt.subplots_adjust(top=0.829, wspace=0.08)
 plt.show()

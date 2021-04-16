@@ -1,6 +1,11 @@
+# Warning:
+# Use of Lagrange-based custom systems is now DEPRECATED. Custom systems
+# should be generated with MinimizerBindingSystemFactory. These Lagrange-based
+# systems could not use MPMath for arbitary precision arithmetic, so complex
+# systems could become numerically unstable 
+
 from inspect import signature
 from copy import deepcopy
-
 
 class LagrangeBindingSystemFactory:
     """

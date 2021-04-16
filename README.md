@@ -18,13 +18,13 @@ PyBindingCurve may be installed from source present in the GitHub repository htt
 > pip install pybindingcurve
 
 # Requirements
-PyBindingCurve was developed using python 3.7.1 but should work with any Python version 3.6 or greater. The following packages are also required
+PyBindingCurve requires Python 3.7 or later due to custom binding systems making use of ordered dictionary keys. The following packages are also required
 - Matplotlib (2.x)
 - Numpy (1.15.x)
 - lm_fit (1.0.0)
 - mpmath (1.1.0)
 
-# Licence
+# License
 [MIT License](https://github.com/stevenshave/pybindingcurve/blob/master/LICENSE)
 
 
@@ -42,6 +42,7 @@ system_parameters = {"p": np.linspace(0, 20), "l": 10, "kdpl": 1}
 my_system.add_curve(system_parameters)
 my_system.show_plot()
 ```
+Tests written using the pytest framework may be run with 'pytest' (ensure pytest is installed in your python environment, or pip install it)
 
 # Authors
 PyBindingCurve was written by Steven Shave 
