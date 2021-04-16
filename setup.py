@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pybindingcurve",
-    version="1.0.5",
+    version="1.0.6",
     author="Steven Shave",
     author_email="steve.nshave@gmail.com",
     description="Protein ligand binding simulation in Python",
@@ -29,5 +29,5 @@ setuptools.setup(
         "mpmath>=1.1.0",
         "autograd>=1.3",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
 )

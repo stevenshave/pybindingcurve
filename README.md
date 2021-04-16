@@ -4,12 +4,6 @@ PyBindingCurve is a Python package for simulation, plotting and fitting of exper
 
 Try without installing on Google colab! https://colab.research.google.com/drive/1upxm56mGYWo8jvTTJjZLOEq6DT0lRy8d
 
-    *There is a bug in Numpy 1.19.4 when running the latest Windows 10 update - see https://tinyurl.com/y3dm3h86, and https://github.com/numpy/numpy/issues/16744). To workaround on Windows 10, use conda/miniconda, or downgrade to Numpy 1.19.3 with:*
-    > pip install numpy==1.19.4
-    
-    The pypi/pip package will automatically exclude numpy 1.19.4 so pip install pybindingcurve is safe.
-
-
 
 ![PyBindingCurve simulation](https://raw.githubusercontent.com/stevenshave/pybindingcurve/master/pybindingcurve_logo.png "Breaking a dimer")
 
