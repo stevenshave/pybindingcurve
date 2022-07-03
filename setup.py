@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pybindingcurve",
-    version="1.0.6",
+    version="1.1.0",
     author="Steven Shave",
     author_email="steve.nshave@gmail.com",
     description="Protein ligand binding simulation in Python",
@@ -19,11 +19,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        # Excluding numpy 1.19.4 as a bug in the windows 10 update 2004
-        # causes a problem - see
-        # https://tinyurl.com/y3dm3h86, and
-        # https://github.com/numpy/numpy/issues/16744.
-        "numpy>=1.18.0,!=1.19.4",
+        "numpy>=1.22",
         "matplotlib>=3.2.1",
         "lmfit>=1.0.0",
         "mpmath>=1.1.0",

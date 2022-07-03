@@ -159,7 +159,11 @@ class BindingSystem:
             if self.analytical:
                 results = self._system(**parameters)  # Analytical
             else:
-                results = self._system(**parameters)[self.default_readout]  # Kinetic
+                simulation_results=self._system(**tmp_params)
+                if self.default_readout not in simulation_results:
+                    self.default_readout=f"{self.default_readout}_f"
+                results = simulation_results[self.default_readout]
+                
         else:
             # At least 1 changing parameter
             if len(changing_parameters) == 1:
@@ -181,13 +185,16 @@ class BindingSystem:
                             changing_parameters[0]
                         ][i]
                         results[i] = self._system(**tmp_params)
-                else:  # Changing parameter on kinetic solution
+                else:  # Changing parameter on lagrange or kinetic solution
                     for i in range(results.shape[0]):
                         tmp_params = dict(parameters)
                         tmp_params[changing_parameters[0]] = parameters[
                             changing_parameters[0]
                         ][i]
-                        results[i] = self._system(**tmp_params)[self.default_readout]
+                        simulation_results=self._system(**tmp_params)
+                        if self.default_readout not in simulation_results:
+                            self.default_readout=f"{self.default_readout}_f"
+                        results[i] = simulation_results[self.default_readout]
             else:
                 print(
                     "Only 1 parameter may change, currently changing: ",

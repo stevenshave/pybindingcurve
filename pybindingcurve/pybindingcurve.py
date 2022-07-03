@@ -181,6 +181,7 @@ class BindingCurve:
     _num_added_sets_of_points = 0
     _last_known_changing_parameter = "X"
 
+
     def query(self, parameters, readout: Readout = None):
         """
         Query a binding system
@@ -237,7 +238,7 @@ class BindingCurve:
         ]
         return changing_list if len(changing_list) > 0 else None
 
-    def __init__(self, binding_system:Union[str, BindingSystem]):
+    def __init__(self, binding_system:Union[str, BindingSystem], disable_signal_warnings:bool=False):
         """
         Construct BindingCurve objects
 
@@ -253,7 +254,13 @@ class BindingCurve:
             Define the binding system which will govern this BindingCurve
             object. Can either be a BindingSystem object or a human readable
             string shortcut, such as '1:1' or 'competition', etc.
+        disable_signal_warnings : bool
+            If True, then no warning is given if y values are larger than x
+            values. This was put in originally to force people to put in a
+            ymin value to their system to specify a signal, rather than a
+            concentration is being used.
         """
+        self.disable_signal_warning=disable_signal_warnings
         if isinstance(binding_system, str):
             # Check if its a custom defined system - containing <->
             if binding_system.find("<->") != -1:
@@ -693,6 +700,7 @@ class BindingCurve:
             if (
                 "ymin" not in system_parameters.keys()
                 and "ymax" not in system_parameters.keys()
+                and not self.disable_signal_warning
             ):
                 print(
                     "Warning: Some x-values are greater than y-values, implying you forgot to include a ymin or ymax to indicate your ycoords are signal, not concentrations, please provide a ymin in the fit parameters to indicate it is a signal"
