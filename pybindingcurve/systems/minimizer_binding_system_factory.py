@@ -8,7 +8,7 @@ class MinimizerBindingSystemFactory:
 	MinimizerBindingSystemFactory produces custom minimizer-based binding
 	system fucntions
 
-	From a simple definition string representing standard 1:1:1 competition, such as in Excample 1:
+	From a simple definition string representing standard 1:1:1 competition, such as in Example 1:
 
 	Example 1:
 	----------
@@ -419,6 +419,10 @@ class MinimizerBindingSystemFactory:
 		for s in species.keys():
 			if s not in reaction_dict.keys():
 				fundamental_species[s] = None
+		
+		unordered_species=species.copy()
+		species={k:v for k, v in fundamental_species.items()}
+		species.update({k:v for k,v in unordered_species.items() if k not in fundamental_species.keys()})
 		return species, fundamental_species
 
 
