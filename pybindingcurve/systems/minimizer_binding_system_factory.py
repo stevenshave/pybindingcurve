@@ -342,13 +342,13 @@ class MinimizerBindingSystemFactory:
 				reaction_dict[product] = []
 			reaction_dict[product].append([reactant1, reactant2])
 
-			# Set the readout.
-			if self.readout is None:
-				first_product = list(reaction_dict.keys())[0]
-				print(
-					f"* character not found to set readout in custom system, using the first product, which is: {first_product}"
-				)
-				self.readout = first_product
+		# Set the readout.
+		if self.readout is None:
+			first_product = list(reaction_dict.keys())[0]
+			print(
+				f"* character not found to set readout in custom system, using the first product, which is: {first_product}"
+			)
+			self.readout = first_product
 
 		return reaction_dict
 
