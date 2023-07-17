@@ -414,6 +414,9 @@ class BindingCurve:
             return None
         self._initialize_plot()
         changing_parameters = self._find_changing_parameters(parameters)
+        if changing_parameters is None:
+            print("No changing parameters detected. Plotting curves requires something to be changing")
+            return
         if not len(changing_parameters) == 1:
             print("Must have 1 changing parameter, no curves added.")
             return

@@ -159,7 +159,7 @@ class BindingSystem:
             if self.analytical:
                 results = self._system(**parameters)  # Analytical
             else:
-                simulation_results=self._system(**tmp_params)
+                simulation_results=self._system(**parameters)
                 if self.default_readout not in simulation_results:
                     self.default_readout=f"{self.default_readout}_f"
                 results = simulation_results[self.default_readout]
