@@ -4,6 +4,7 @@ from .binding_system import BindingSystem
 from .lagrange_binding_system_factory import LagrangeBindingSystemFactory
 import numpy as np
 
+
 # 1:1 binding - see https://stevenshave.github.io/pybindingcurve/simulate_1to1.html
 def system01_lagrange(p, l, kdpl):
     def F(X):  # Augmented Lagrange function
