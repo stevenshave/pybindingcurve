@@ -1,0 +1,54 @@
+[project]
+name="pybindingcurve"
+version="1.1.5"
+description="Protein ligand binding simulation in Python"
+authors = [
+    {name = "Steven Shave"},
+]
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["molecular similarity", "ligand based virtual screening"]
+dependencies = [
+    "numpy>=1.26",
+    "matplotlib>=3.8.3",
+    "lmfit>=1.2.2",
+    "mpmath>=1.3.0",
+    "autograd>=1.6.2",
+    ]
+[build-system]
+requires=[
+    "setuptools>=68.2.2",
+    ]
+build-backend="setuptools.build_meta"
+
+[tool.black]
+skip-string-normalization = true
+include = '''
+(
+    ^/tests/
+  | ^/src/
+  | ^/setup[.]py
+)
+'''
+exclude = '''
+(
+    __pycache__
+    |.*\.egg-info
+)
+'''
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.urls]
+"Homepage" = "https://github.com/stevenshave/pybindingcurve"
+
+[project.optional-dependencies]
+dev = [
+    'black==24.3.0',
+    'pytest==8.1.1',
+    'build==0.10.0',
+]
+
+[tool.pytest.ini_options]
+"testpaths" = "tests/test*"
