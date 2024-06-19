@@ -14,11 +14,12 @@ PyBindingCurve may be installed from source present in the GitHub repository htt
 > pip install pybindingcurve
 
 # Requirements
-PyBindingCurve requires Python 3.7 or later due to custom binding systems making use of ordered dictionary keys. The following packages are also required
-- Matplotlib (2.x)
-- Numpy (1.22.x)
-- lm_fit (1.0.0)
-- mpmath (1.1.0)
+PyBindingCurve requires Python 3.9 or later. The following packages are also required
+- numpy>=1.26
+- matplotlib>=3.8
+- lmfit>=1.2.2
+- mpmath>=1.3.0
+- autograd>=1.6.2
 
 # License
 [MIT License](https://github.com/stevenshave/pybindingcurve/blob/master/LICENSE)

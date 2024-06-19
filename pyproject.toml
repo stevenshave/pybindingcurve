@@ -1,6 +1,6 @@
 [project]
 name="pybindingcurve"
-version="1.2.2"
+version="1.2.3"
 description="Protein ligand binding simulation in Python"
 authors = [
     {name = "Steven Shave"},
