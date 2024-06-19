@@ -1,6 +1,6 @@
 [project]
 name="pybindingcurve"
-version="1.2.0"
+version="1.2.1"
 description="Protein ligand binding simulation in Python"
 authors = [
     {name = "Steven Shave"},
@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["molecular similarity", "ligand based virtual screening"]
 dependencies = [
-    "numpy>=1.26,<2.0.0",
+    "numpy>=1.26",
     "matplotlib>=3.8.3",
     "lmfit>=1.2.2",
     "mpmath>=1.3.0",
