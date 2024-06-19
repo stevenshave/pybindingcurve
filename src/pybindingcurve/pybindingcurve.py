@@ -610,10 +610,8 @@ class BindingCurve:
         if show_legend:
             self.axes.legend(prop={"size": pbc_plot_style["legend_font_size"]})
 
-        for tick in self.axes.xaxis.get_major_ticks():
-            tick.label.set_fontsize(pbc_plot_style["x_tick_label_font_size"])
-        for tick in self.axes.yaxis.get_major_ticks():
-            tick.label.set_fontsize(pbc_plot_style["y_tick_label_font_size"])
+        self.axes.tick_params(axis='x', which='major', labelsize=pbc_plot_style["x_tick_label_font_size"])
+        self.axes.tick_params(axis='y', which='major', labelsize=pbc_plot_style["y_tick_label_font_size"])
 
         if png_filename is not None:
             plt.savefig(
