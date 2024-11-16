@@ -207,6 +207,12 @@ class BindingSystem:
             return np.nan_to_num(results)
         return results  # We get here if its not a numpy array, but a system with multiple solutions queried at for a single point
 
+    def get_all_species(self):
+        if hasattr(self, "all_species"):
+            return self.all_species
+        else:
+            raise NotImplementedError("get_all_species is not yet implemented for this type of binding system")
+
     def _are_ymin_ymax_present(self, parameters: dict):
         """
         Check the existance of the minimum or maximum readout

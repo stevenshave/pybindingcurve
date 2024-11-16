@@ -362,9 +362,10 @@ class System_minimizer_custom(BindingSystem):
     def __init__(self, system_string):
         custom_system = MinimizerBindingSystemFactory(system_string)
         super().__init__(custom_system.binding_function)
+        self.all_species=custom_system.all_species
         self.default_readout = custom_system.readout
         self.arguments=custom_system.binding_function_arguments
-
+        
     def query(self, parameters: dict):
         mp.dps = 100
         if self._are_ymin_ymax_present(parameters):

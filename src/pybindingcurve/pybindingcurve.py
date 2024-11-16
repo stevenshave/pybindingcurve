@@ -774,3 +774,6 @@ class BindingCurve:
                 return None
             else:
                 return self.system.arguments
+            
+    def get_all_species(self):
+        return self.system.get_all_species()
